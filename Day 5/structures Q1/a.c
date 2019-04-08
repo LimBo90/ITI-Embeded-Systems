@@ -18,6 +18,7 @@ struct number getMostRepeated(int arr[], int size){
     int count[10]={0};
     struct number res;
     res.repeatations = 0;
+    
     for (int i = 0; i < size; i++)
         count[arr[i]]++;
     
