@@ -1,0 +1,242 @@
+14:20:22 **** Build of configuration Debug for project LED ****
+make all 
+Building file: ../main.c
+Invoking: AVR Compiler
+avr-gcc -Wall -g2 -gstabs -O0 -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega32 -DF_CPU=8000000UL -MMD -MP -MF"main.d" -MT"main.o" -c -o "main.o" "../main.c"
+Finished building: ../main.c
+ 
+Building target: LED.elf
+Invoking: AVR C Linker
+avr-gcc -Wl,-Map,LED.map -mmcu=atmega32 -o "LED.elf"  ./main.o   
+Finished building target: LED.elf
+ 
+Invoking: AVR Create Extended Listing
+avr-objdump -h -S LED.elf  >"LED.lss"
+Finished building: LED.lss
+ 
+Invoking: Print Size
+avr-size --format=avr --mcu=atmega32 LED.elf
+AVR Memory Usage
+----------------
+Device: atmega32
+
+Program:     146 bytes (0.4% Full)
+(.text + .data + .bootloader)
+
+Data:          0 bytes (0.0% Full)
+(.data + .bss + .noinit)
+
+
+Finished building: sizedummy
+ 
+Invoking: AVRDude
+D:\lab-43-Embedded-system\IMT_SDK_Win_64\WinAVR\bin\avrdude -pm32 -u -Uflash:w:LED.hex:a -Ulfuse:w:0xff:m -Uhfuse:w:0xd9:m
+
+avrdude: no programmer has been specified on the command line or the config file
+         Specify a programmer using the -c option and try again
+
+make: *** [avrdudedummy] Error 1
+14:20:35 **** Incremental Build of configuration Debug for project LED ****
+make all 
+Invoking: Print Size
+avr-size --format=avr --mcu=atmega32 LED.elf
+AVR Memory Usage
+----------------
+Device: atmega32
+
+Program:     146 bytes (0.4% Full)
+(.text + .data + .bootloader)
+
+Data:          0 bytes (0.0% Full)
+(.data + .bss + .noinit)
+
+
+Finished building: sizedummy
+ 
+Invoking: AVRDude
+D:\lab-43-Embedded-system\IMT_SDK_Win_64\WinAVR\bin\avrdude -pm32 -u -Uflash:w:LED.hex:a -Ulfuse:w:0xff:m -Uhfuse:w:0xd9:m
+
+avrdude: no programmer has been specified on the command line or the config file
+         Specify a programmer using the -c option and try again
+
+make: *** [avrdudedummy] Error 1
+14:21:01 **** Incremental Build of configuration Debug for project LED ****
+make all 
+Invoking: Print Size
+avr-size --format=avr --mcu=atmega32 LED.elf
+AVR Memory Usage
+----------------
+Device: atmega32
+
+Program:     146 bytes (0.4% Full)
+(.text + .data + .bootloader)
+
+Data:          0 bytes (0.0% Full)
+(.data + .bss + .noinit)
+
+
+Finished building: sizedummy
+ 
+Invoking: AVRDude
+D:\lab-43-Embedded-system\IMT_SDK_Win_64\WinAVR\bin\avrdude -pm32 -u -Uflash:w:LED.hex:a -Ulfuse:w:0xff:m -Uhfuse:w:0xd9:m
+
+avrdude: no programmer has been specified on the command line or the config file
+         Specify a programmer using the -c option and try again
+
+make: *** [avrdudedummy] Error 1
+14:21:03 **** Incremental Build of configuration Debug for project LED ****
+make all 
+Invoking: Print Size
+avr-size --format=avr --mcu=atmega32 LED.elf
+AVR Memory Usage
+----------------
+Device: atmega32
+
+Program:     146 bytes (0.4% Full)
+(.text + .data + .bootloader)
+
+Data:          0 bytes (0.0% Full)
+(.data + .bss + .noinit)
+
+
+Finished building: sizedummy
+ 
+Invoking: AVRDude
+D:\lab-43-Embedded-system\IMT_SDK_Win_64\WinAVR\bin\avrdude -pm32 -u -Uflash:w:LED.hex:a -Ulfuse:w:0xff:m -Uhfuse:w:0xd9:m
+
+avrdude: no programmer has been specified on the command line or the config file
+         Specify a programmer using the -c option and try again
+
+make: *** [avrdudedummy] Error 1
+14:21:35 **** Incremental Build of configuration Debug for project LED ****
+make all 
+Building target: LED.elf
+Invoking: AVR C Linker
+avr-gcc -Wl,-Map,LED.map -mmcu=atmega32 -o "LED.elf"  ./main.o   
+Finished building target: LED.elf
+ 
+Invoking: AVR Create Extended Listing
+avr-objdump -h -S LED.elf  >"LED.lss"
+Finished building: LED.lss
+ 
+Create Flash image (ihex format)
+avr-objcopy -R .eeprom -R .fuse -R .lock -R .signature -O ihex LED.elf  "LED.hex"
+Finished building: LED.hex
+ 
+Invoking: Print Size
+avr-size --format=avr --mcu=atmega32 LED.elf
+AVR Memory Usage
+----------------
+Device: atmega32
+
+Program:     146 bytes (0.4% Full)
+(.text + .data + .bootloader)
+
+Data:          0 bytes (0.0% Full)
+(.data + .bss + .noinit)
+
+
+Finished building: sizedummy
+ 
+Invoking: AVRDude
+D:\lab-43-Embedded-system\IMT_SDK_Win_64\WinAVR\bin\avrdude -pm32 -u -Uflash:w:LED.hex:a -Ulfuse:w:0xff:m -Uhfuse:w:0xd9:m
+
+avrdude: no programmer has been specified on the command line or the config file
+         Specify a programmer using the -c option and try again
+
+make: *** [avrdudedummy] Error 1
+14:22:02 **** Incremental Build of configuration Debug for project LED ****
+make all 
+Building target: LED.elf
+Invoking: AVR C Linker
+avr-gcc -Wl,-Map,LED.map -mmcu=atmega32 -o "LED.elf"  ./main.o   
+Finished building target: LED.elf
+ 
+Invoking: AVR Create Extended Listing
+avr-objdump -h -S LED.elf  >"LED.lss"
+Finished building: LED.lss
+ 
+Create Flash image (ihex format)
+avr-objcopy -R .eeprom -R .fuse -R .lock -R .signature -O ihex LED.elf  "LED.hex"
+Finished building: LED.hex
+ 
+Invoking: Print Size
+avr-size --format=avr --mcu=atmega32 LED.elf
+AVR Memory Usage
+----------------
+Device: atmega32
+
+Program:     146 bytes (0.4% Full)
+(.text + .data + .bootloader)
+
+Data:          0 bytes (0.0% Full)
+(.data + .bss + .noinit)
+
+
+Finished building: sizedummy
+ 
+Invoking: AVRDude
+D:\lab-43-Embedded-system\IMT_SDK_Win_64\WinAVR\bin\avrdude -pm32 -cusbasp -u -Uflash:w:LED.hex:a -Ulfuse:w:0xff:m -Uhfuse:w:0xd9:m
+
+avrdude: warning: cannot set sck period. please check for usbasp firmware update.
+avrdude: AVR device initialized and ready to accept instructions
+
+Reading | ################################################## | 100% 0.00s
+
+avrdude: Device signature = 0x1e9502
+avrdude: NOTE: FLASH memory has been specified, an erase cycle will be performed
+         To disable this feature, specify the -D option.
+avrdude: erasing chip
+avrdude: warning: cannot set sck period. please check for usbasp firmware update.
+avrdude: reading input file "LED.hex"
+avrdude: input file LED.hex auto detected as Intel Hex
+avrdude: writing flash (146 bytes):
+
+Writing | ################################################## | 100% 0.10s
+
+avrdude: 146 bytes of flash written
+avrdude: verifying flash memory against LED.hex:
+avrdude: load data flash data from input file LED.hex:
+avrdude: input file LED.hex auto detected as Intel Hex
+avrdude: input file LED.hex contains 146 bytes
+avrdude: reading on-chip flash data:
+
+Reading | ################################################## | 100% 0.08s
+
+avrdude: verifying ...
+avrdude: 146 bytes of flash verified
+avrdude: reading input file "0xff"
+avrdude: writing lfuse (1 bytes):
+
+Writing | ################################################## | 100% 0.00s
+
+avrdude: 1 bytes of lfuse written
+avrdude: verifying lfuse memory against 0xff:
+avrdude: load data lfuse data from input file 0xff:
+avrdude: input file 0xff contains 1 bytes
+avrdude: reading on-chip lfuse data:
+
+Reading | ################################################## | 100% 0.00s
+
+avrdude: verifying ...
+avrdude: 1 bytes of lfuse verified
+avrdude: reading input file "0xd9"
+avrdude: writing hfuse (1 bytes):
+
+Writing | ################################################## | 100% 0.02s
+
+avrdude: 1 bytes of hfuse written
+avrdude: verifying hfuse memory against 0xd9:
+avrdude: load data hfuse data from input file 0xd9:
+avrdude: input file 0xd9 contains 1 bytes
+avrdude: reading on-chip hfuse data:
+
+Reading | ################################################## | 100% 0.00s
+
+avrdude: verifying ...
+avrdude: 1 bytes of hfuse verified
+
+avrdude done.  Thank you.
+
+Finished building: avrdudedummy
+ 
