@@ -11,7 +11,7 @@
 #define HLCD_DATA_PORT	PORTD
 
 
-#define HLCD_MODE_8_BIT 1
+#define HLCD_MODE_8_BIT 0
 
 void HLCD_init(void);
 void HLCD_writeCMD(u8 cmd);
