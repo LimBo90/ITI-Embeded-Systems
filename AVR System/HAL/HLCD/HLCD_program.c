@@ -1,4 +1,4 @@
-#define F_CPU 8000000
+
 
 #include "LSTD_TYPES.h"
 #include "LUTILS.h"
@@ -6,7 +6,10 @@
 #include "MDIO_interface.h"
 #include "HLCD_interface.h"
 
+void latchEnablePin(u8 delay);
+
 void HLCD_init(void){
+	_delay_ms(30);
 	//Sets control pins and data port pins to be output
 	MDIO_setPinDirection(HLCD_CONTROL_PORT, HLCD_RS, OUTPUT);
 	MDIO_setPinDirection(HLCD_CONTROL_PORT, HLCD_RW, OUTPUT);
@@ -15,16 +18,20 @@ void HLCD_init(void){
 		MDIO_setPortDirection(HLCD_DATA_PORT, 0xFF, OUTPUT);
 	else
 		MDIO_setPortDirection(HLCD_DATA_PORT, 0xF0, OUTPUT);
-	_delay_ms(50);
+	_delay_ms(1);
 
 	//Function set
 	//sets the data length to 8bit or 4bit mode
 	//sets the lcd to be 2 line display
 	//sets the font to be 5 x 10 dots
-	if(HLCD_MODE_8_BIT)
+	if(HLCD_MODE_8_BIT){
 		HLCD_writeCMD(FNSET_DATA_LENGTH_8_BIT| FNSET_TWO_LINE_DISPLAY | FNSET_FONT_5x7);
-	else
+	}else{
+		//writes the upper 4 bits of command to the data port
+		MDIO_setPortToValue(HLCD_DATA_PORT, 0xF0, 0x20);
+		latchEnablePin(2);
 		HLCD_writeCMD(FNSET_DATA_LENGTH_4_BIT| FNSET_TWO_LINE_DISPLAY | FNSET_FONT_5x7);
+	}
 	_delay_ms(1);
 
 	//Display ON/OFF Control
@@ -57,27 +64,15 @@ void HLCD_writeCMD(u8 cmd){
 	if(HLCD_MODE_8_BIT){
 		//writes the command to the data port
 		MDIO_setPortToValue(HLCD_DATA_PORT, 0xFF, cmd);
-
-		//latches the EN pin
-		MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, HIGH);
-		_delay_ms(2);
-		MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, LOW);
+		latchEnablePin(2);
 	}else{
 		//writes the upper 4 bits of command to the data port
 		MDIO_setPortToValue(HLCD_DATA_PORT, 0xF0, cmd);
-
-		//latches the EN pin
-		MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, HIGH);
-		_delay_ms(2);
-		MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, LOW);
+		latchEnablePin(2);
 
 		//writes the lower 4 bits command to the data port
 		MDIO_setPortToValue(HLCD_DATA_PORT, 0xF0, cmd<<4);
-
-		//latches the EN pin
-		MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, HIGH);
-		_delay_ms(2);
-		MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, LOW);
+		latchEnablePin(2);
 	}
 	return;
 }
@@ -96,27 +91,15 @@ void HLCD_writeData(u8 data){
 	if(HLCD_MODE_8_BIT){
 		//writes the command to the data port
 		MDIO_setPortToValue(HLCD_DATA_PORT, 0xFF, data);
-
-		//latches the EN pin
-		MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, HIGH);
-		_delay_ms(2);
-		MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, LOW);
+		latchEnablePin(2);
 	}else{
 		//writes the upper 4 bits of data to the data port
 		MDIO_setPortToValue(HLCD_DATA_PORT, 0xF0, data);
-
-		//latches the EN pin
-		MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, HIGH);
-		_delay_ms(2);
-		MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, LOW);
+		latchEnablePin(2);
 
 		//writes the lower 4 bits of data to the data port
 		MDIO_setPortToValue(HLCD_DATA_PORT, 0xF0, data<<4);
-
-		//latches the EN pin
-		MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, HIGH);
-		_delay_ms(2);
-		MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, LOW);
+		latchEnablePin(2);
 	}
 	return;
 }
@@ -132,3 +115,75 @@ void HLCD_writeStr(u8 str[]){
 	}
 }
 
+void latchEnablePin(u8 delay){
+	//latches the EN pin
+	MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, HIGH);
+	_delay_ms(delay);
+	MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, LOW);
+}
+
+void HLCD_clearDisplay(){
+	HLCD_writeCMD(CLEAR_DISPLAY);
+}
+
+void HLCD_setCursor(u8 row, u8 col){
+	//The ranges are from 0 to 1 on the y-axis and from 0 to 15 on the x-axis
+	if(!(row <= 1 && row >= 0 && col >= 0 && col <= 15))
+		return;
+	switch(row){
+	case 0:
+		//first line
+		HLCD_writeCMD(col| DDRAM_FIRST_LINE_START_ADDRESS);
+		break;
+	case 1:
+		//second line
+		HLCD_writeCMD(col | DDRAM_SECOND_LINE_START_ADDRESS);
+		break;
+	}
+	return;
+}
+
+
+void HLCD_shiftCursor(u8 direction){
+	switch(direction){
+	case HLCD_LEFT:
+		HLCD_writeCMD(SHIFT_CURSOR_LEFT);
+		break;
+	case HLCD_RIGHT:
+		HLCD_writeCMD(SHIFT_CURSOR_RIGHT);
+		break;
+	}
+}
+
+void HLCD_shiftDisplay(u8 direction){
+	switch(direction){
+	case HLCD_RIGHT:
+		HLCD_writeCMD(SHIFT_DISPLAY_LEFT);
+		break;
+	case HLCD_LEFT:
+		HLCD_writeCMD(SHIFT_DISPLAY_RIGHT);
+		break;
+	}
+}
+
+
+void HLCD_addCustomCharacter(u8 indx, u8 pattern[7]){
+	//only 8 custom characters can be written from indx 0 to 7
+	if(indx < 0 || indx > 7)
+		return;
+
+	//set address counter to CGRAM address
+	u8 cgramAddress = indx * 8;
+	HLCD_writeCMD(SET_CGRAM_ADDRESS_CMD | cgramAddress);
+	for(int i = 0; i < 7; i++){
+		HLCD_writeData(pattern[i]);
+	}
+	//the 8th row must be all zeroes
+	HLCD_writeData(0);
+	//sets the address counter back to ddram
+	HLCD_writeCMD(DDRAM_FIRST_LINE_START_ADDRESS);
+}
+
+void HLCD_displayCustomCharacter(u8 indx){
+	HLCD_writeData(indx);
+}

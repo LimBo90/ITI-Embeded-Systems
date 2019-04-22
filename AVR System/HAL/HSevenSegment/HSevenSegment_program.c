@@ -20,7 +20,7 @@
 
 void HSevenSegment_init(u8 port){
     MDIO_setPortDirection(port, 0xFF, OUTPUT);
-    MDIO_setPortToValue(port, 255);
+    MDIO_setPortToValue(port,0xFF, 255);
 }
 
 /*
@@ -42,7 +42,6 @@ void HSevenSegment_displayNum(u8 port, u8 num){
         case 9: MDIO_setPortToValue(port, 0xFF,  NINE);    return;
         default:
         	MDIO_setPortToValue(port, 0xFF,  ERROR);    return;
-
     }
     return;
 }
