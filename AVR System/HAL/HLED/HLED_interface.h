@@ -5,9 +5,12 @@
 #include "LUTILS.h"
 
 void HLED_init(u8 port, u8 pin);
-void HLED_initLEDS(u8 port, u8 mask);
 void HLED_on(u8 port, u8 pin);
 void HLED_off(u8 port, u8 pin);
 void HLED_toggle(u8 port, u8 pin);
+void HLED_initLEDS(u8 port, u8 mask);
+void HLED_onLEDS(u8 port, u8 maks);
+void HLED_offLEDS(u8 port, u8 mask);
+void HLED_toggleLEDS(u8 port, u8 mask);
 
 #endif
