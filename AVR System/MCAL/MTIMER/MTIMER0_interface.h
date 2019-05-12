@@ -18,11 +18,13 @@
 #define MTIMER_EXTERNAL_FALLING_EDGE 6
 #define MTIMER_EXTERNAL_RISING_EDGE 7
 
-//modes
+//modes in timer 0 and timer 1
 #define MTIMER_MODE_NORMAL 0
 #define MTIMER_MODE_PHASE_CORRECT_PWM 1
 #define MTIMER_MODE_CTC 2
 #define MTIMER_MODE_FAST_PWM 3
+//modes in timer 1
+#define MTIMER_MODE_14 14
 
 //pwm_modes
 #define MTIMER0_PWM_MODE_INVERTED 0
@@ -52,4 +54,6 @@ u16 MTIMER1_getPeriod();
 u16 MTIMER1_getDutyCycle();
 void MTIMER1_startTimer();
 void MTIMER1_stopTimer();
+void MTIMER1_setTOP(u16 value);
+void MTIMER1_PWM(u8 mode, u16 value);
 #endif

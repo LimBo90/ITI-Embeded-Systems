@@ -7,6 +7,8 @@
 #include "HLCD_interface.h"
 
 void latchEnablePin(u8 delay);
+void numberToString(s32 i, u8 buff[]);
+
 
 void HLCD_init(void){
 	_delay_ms(30);
@@ -115,11 +117,10 @@ void HLCD_writeStr(u8 str[]){
 	}
 }
 
-void latchEnablePin(u8 delay){
-	//latches the EN pin
-	MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, HIGH);
-	_delay_ms(delay);
-	MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, LOW);
+void HLCD_writeNumber(u16 n){
+	u8 buffer[16];
+	numberToString(n, buffer);
+	HLCD_writeStr(buffer);
 }
 
 void HLCD_clearDisplay(){
@@ -186,4 +187,30 @@ void HLCD_addCustomCharacter(u8 indx, u8 pattern[7]){
 
 void HLCD_displayCustomCharacter(u8 indx){
 	HLCD_writeData(indx);
+}
+
+void latchEnablePin(u8 delay){
+	//latches the EN pin
+	MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, HIGH);
+	_delay_ms(delay);
+	MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, LOW);
+}
+
+
+void numberToString(s32 i, u8 b[]){
+    char* p = b;
+    if(i<0){
+        *p++ = '-';
+        i *= -1;
+    }
+    int shifter = i;
+    do{ //Move to where representation ends
+        ++p;
+        shifter = shifter/10;
+    }while(shifter);
+    *p = '\0';
+    do{ //Move back, inserting digits as u go
+        *--p = '0' + (i%10);
+        i = i/10;
+    }while(i);
 }

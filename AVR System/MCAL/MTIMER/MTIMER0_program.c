@@ -3,7 +3,7 @@
 #include "MTIMER0_private.h"
 #include "MTIMER0_interface.h"
 
-
+u8 g_mode_timer0, g_mode_timer1;
 u8 g_prescaler_timer0 = 0, g_prescaler_timer1 = 0;
 volatile u32 g_overflowsCounter, g_overflowsN;
 volatile u8 g_rem;
@@ -30,7 +30,6 @@ void MTIMER0_init(u8 mode, u8 prescaler){
             //toggle oc0 on comapre match
             SET_BIT(MTIMER0_TCCR0, MTIMER0_COM00);
             CLR_BIT(MTIMER0_TCCR0, MTIMER0_COM01);
-
             break;
         case MTIMER_MODE_FAST_PWM:
             SET_BIT(MTIMER0_TCCR0, MTIMER0_WGM00);
@@ -38,6 +37,7 @@ void MTIMER0_init(u8 mode, u8 prescaler){
             break;
     }
     g_prescaler_timer0 = prescaler;
+    g_mode_timer0 = mode;
 }
 
 
@@ -49,11 +49,18 @@ void MTIMER1_init(u8 mode, u8 prescaler){
 		CLR_BIT(MTIMER1_TCCR1A, MTIMER1_WGM11);
 		CLR_BIT(MTIMER1_TCCR1B, MTIMER1_WGM12);
 		CLR_BIT(MTIMER1_TCCR1B, MTIMER1_WGM13);
-		//detect rising edge
+		//in ICU mode generate interrupt on rising edge
 		SET_BIT(MTIMER1_TCCR1B, MTIMER1_ICES1);
+		break;
+	case MTIMER_MODE_14:
+		CLR_BIT(MTIMER1_TCCR1A, MTIMER1_WGM10);
+		SET_BIT(MTIMER1_TCCR1A, MTIMER1_WGM11);
+		SET_BIT(MTIMER1_TCCR1B, MTIMER1_WGM12);
+		SET_BIT(MTIMER1_TCCR1B, MTIMER1_WGM13);
 		break;
 	}
 	g_prescaler_timer1 = prescaler;
+	g_mode_timer1 = mode;
 }
 
 void MTIMER0_delay_ms(u32 delay){
@@ -99,7 +106,7 @@ void MTIMER0_disableCTCModeInterrupt(){
 }
 
 void MTIMER1_enableInputCaptureInterrupt(){
-	CLR_BIT(MTIMER_TIMSK, MTIMER_TICE1);
+	SET_BIT(MTIMER_TIMSK, MTIMER_TICE1);
 }
 
 void MTIMER1_disableInputCaptureInterrupt(){
@@ -123,6 +130,11 @@ void MTIMER0_setDelay(u32 delay){
     g_overflowsCounter = g_overflowsN;
 }
 
+/**
+ * Sets CTC mode
+ * input: 	OCR 	the value at which the counter will overflow
+ * 			delay	the delay in melliseconds after which the timer will generate an interrupt
+ */
 void MTIMER0_setCompare(u8 OCR, u32 delay){
 	u16 prescaler = 1024;
 //	double tickTime_ms = (double)prescaler/8000.0;
@@ -172,6 +184,30 @@ void MTIMER0_PWM(u8 mode, u8 value){
 	MTIMER0_OCR0 = value;
 }
 
+/**
+ * generates a PWM signal on OC1A pin
+ * input:	mode	inverted or non-inverted mode
+ * 			value 	this value
+ * 					in non-inverted mode the duty cycle of PWM will be proportional to value
+ * 					in inverted mode the duty cycle of PWM will be inversely proportional to value
+ *
+ * 					ex:- value = 64
+ * 							the duty cycle will be 25% in non-inverted mode
+ * 							and will be 75% in inverted mode
+ *
+ */
+void MTIMER1_PWM(u8 mode, u16 value){
+	SET_BIT(MTIMER1_TCCR1A, MTIMER1_COM1A1);
+
+	switch(mode){
+	case MTIMER0_PWM_MODE_NON_INVERTED:
+		CLR_BIT(MTIMER1_TCCR1A, MTIMER1_COM1A0);	break;
+	case MTIMER0_PWM_MODE_INVERTED:
+		SET_BIT(MTIMER1_TCCR1A, MTIMER1_COM1A0);	break;
+	}
+	MTIMER1_OCR1A = value;
+}
+
 void MTIMER0_registerISR(void (*isr_func)(void)){
 	TIMER0_ISR_ptr = isr_func;
 }
@@ -182,15 +218,18 @@ void __vector_6(void){
 	MTIMER1_TCNT1 = 0;
 	switch(flag){
 	case 1:	//first rising edge
+		//generate next interrupt on falling edge
 		CLR_BIT(MTIMER1_TCCR1B, MTIMER1_ICES1);
 		break;
 	case 2:	//first falling edge
 		Ton = MTIMER1_ICR1;
+		//generate next interrupt on rising edge
 		SET_BIT(MTIMER1_TCCR1B, MTIMER1_ICES1);
 		break;
 	case 3:	//second rising edge
 		flag = 1;
 		Toff = MTIMER1_ICR1;
+		//generate next interrupt on falling edge
 		CLR_BIT(MTIMER1_TCCR1B, MTIMER1_ICES1);
 		T = Ton + Toff;
 		break;
@@ -226,14 +265,15 @@ void MTIMER0_startTimer(){
     MTIMER0_TCCR0 |= (MTIMER0_CS_MASK & g_prescaler_timer0);
 }
 
-void MTIMER1_startTimer(){
-    MTIMER1_TCCR1B &= ~MTIMER1_CS_MASK;
-    MTIMER1_TCCR1B |= (MTIMER1_CS_MASK & g_prescaler_timer1);
-}
-
 void MTIMER0_stopTimer(){
     MTIMER0_TCCR0 &= ~MTIMER0_CS_MASK;
     MTIMER0_TCNT0 = 0;
+}
+
+
+void MTIMER1_startTimer(){
+    MTIMER1_TCCR1B &= ~MTIMER1_CS_MASK;
+    MTIMER1_TCCR1B |= (MTIMER1_CS_MASK & g_prescaler_timer1);
 }
 
 void MTIMER1_stopTimer(){
@@ -245,5 +285,15 @@ u16 MTIMER1_getPeriod(){
 	return T;
 }
 u16 MTIMER1_getDutyCycle(){
-	return (Ton*100)/T;
+	if(T > 0)
+		return (Ton*100)/T;
+	else
+		return 150;
+}
+
+void MTIMER1_setTOP(u16 value){
+	switch(g_mode_timer1){
+	case MTIMER_MODE_14:
+		MTIMER1_ICR1 = value;	break;
+	}
 }

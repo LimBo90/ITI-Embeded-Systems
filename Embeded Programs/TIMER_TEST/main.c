@@ -11,6 +11,7 @@
 #include "MDIO_interface.h"
 #include "HLCD_interface.h"
 #include "MTIMER0_interface.h"
+#include "util/delay.h"
 #define F_CPU 8000000
 
 
@@ -21,8 +22,8 @@ void init(){
 
 	//fast PWM mode
 	MDIO_setPinDirection(PORTB, PIN_3, OUTPUT);	//set OC0 to be output
-	MTIMER0_init(MTIMER_MODE_PHASE_CORRECT_PWM, MTIMER_PRESCALER_8);
-	MTIMER0_PWM(MTIMER0_PWM_MODE_NON_INVERTED, 2);
+	MTIMER0_init(MTIMER_MODE_FAST_PWM, MTIMER_PRESCALER_8);
+	MTIMER0_PWM(MTIMER0_PWM_MODE_NON_INVERTED, 245);
 	MTIMER0_startTimer();
 
 	//timer 1
@@ -42,9 +43,10 @@ int main(){
 		HLCD_writeStr("Period = ");
 		itoa(MTIMER1_getPeriod(), buffer, 10);
 		HLCD_writeStr(buffer);
-//		HLC_setCursor(1, 5);
-//		itoa(MTIMER1_getDutyCycle(), buffer, 10);
-//		HLCD_writeStr(buffer);
+		HLCD_setCursor(1, 5);
+		HLCD_writeStr("D = ");
+		itoa(MTIMER1_getDutyCycle(), buffer, 10);
+		HLCD_writeStr(buffer);
 	}
 
 
