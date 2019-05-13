@@ -2,12 +2,11 @@
 #include "LUTILS.h"
 #include "MDIO_interface.h"
 #include "HKPD_interface.h"
-#include "util/delay.h"
 
-u8 KEYPAD[4][4] = {{'1', '2', '3', '+'},
-                   {'4', '5', '6', '-'},
-                   {'7', '8', '9', '*'},
-                    {'#', '0', '*', '='}};
+u8 KEYPAD[4][4] = {{'1', '2', '3', 'A'},
+                   {'4', '5', '6', 'B'},
+                   {'7', '8', '9', 'C'},
+                    {'#', '0', '*', 'K'}};
 
 void HKPD_init(void){
     //sets C1,C2,c3,C4 as ouput pins
@@ -28,13 +27,12 @@ u8 HKPD_getKey(){
             if(MDIO_getPinValue(HKPD_PORT, j) == LOW){
                 while(MDIO_getPinValue(HKPD_PORT, j) == LOW) ;
                 MDIO_setPinValue(HKPD_PORT, i, HIGH);
-                //_delay_ms(100);
                 return KEYPAD[j-4][3-i];
             }
         }
         MDIO_setPinValue(HKPD_PORT, i, HIGH);
     }
-    return NULL_CHARACTER;
+    return HKPD_NULL_CHARACTER;
 }
 
 
