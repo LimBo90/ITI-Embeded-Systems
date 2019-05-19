@@ -1,7 +1,11 @@
 #include "LSTD_TYPES.h"
 #include "LUTILS.h"
-#include "MTIMER0_private.h"
 #include "MTIMER0_interface.h"
+#include "MTIMER0_private.h"
+
+#ifndef F_CPU
+#define F_CPU 8000
+#endif
 
 u8 g_mode_timer0, g_mode_timer1;
 u8 g_prescaler_timer0 = 0, g_prescaler_timer1 = 0;
@@ -115,15 +119,16 @@ void MTIMER1_disableInputCaptureInterrupt(){
 
 void MTIMER0_setDelay(u32 delay){
 //	u8 prescaler = 8;	//hardcoded prescaler 8
-//	g_overflowsN = (delay*F_CPU_KHZ)/(256*prescaler);
-//	g_rem = ((delay*F_CPU_KHZ)/prescaler)%256;
+//	g_overflowsN = (delay*F_CPU)/(256*prescaler);
+//	g_rem = ((delay*F_CPU)/prescaler)%256;
 
-//	g_overflowsN = (delay*1000) / (256.0);
-//	g_rem = (delay * 1000) % (256);
+	g_overflowsN = (delay*1000)/256;
+	g_rem = (delay*1000)%256;
 
-	 g_overflowsN = 3906;
-	 g_rem = 64;
-
+//	HLCD_writeStr("g_ov = ");
+//	HLCD_writeNumber(g_overflowsN);
+//	HLCD_setCursor(1,0);
+//	HLCD_writeNumber(delay*F_CPU);
     MTIMER0_TCNT0 = 256 - g_rem;
     if(g_rem > 0)
     	g_overflowsN++;

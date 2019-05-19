@@ -1,7 +1,6 @@
 #ifndef MTIMER0_PRIVATE_H_
 #define MTIMER0_PRIVATE_H_
 
-#include "LSTD_TYPES.h"
 
 /*************** GENERAL *************/
 /*********** REGISTERS *********/
