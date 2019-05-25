@@ -56,6 +56,6 @@ void MDIO_voidInit(void);
 void MDIO_voidSetPinValue(u8 Copy_u8Port, u8 Copy_u8Pin, u8 Copy_u8PinVal);
 void MDIO_voidGetPinValue(u8 Copy_u8Port, u8 Copy_u8Pin, u8* Copy_u8PinVal);
 void MDIO_voidSetPinMode(u8 Copy_u8Port, u8 Copy_u8Pin, u8 Copy_PinMode);
-
-
+void MDIO_voidSetPortMode(u8 Copy_u8Port, u16 Copy_u8Mask, u8 Copy_PinMode);
+void MDIO_voidSetPortValue(u8 Copy_u8Port, u16 Copy_u8Mask, u16 Copy_u8Value);
 #endif

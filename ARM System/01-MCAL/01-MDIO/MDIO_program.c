@@ -4,6 +4,8 @@
 #include "MDIO_interface.h"
 #include "MDIO_private.h"
 
+//https://stackoverflow.com/questions/38881877/bit-hack-expanding-bits
+//
 static u64 MLocal_u64ExpandMask(u16 mask){
 	u64 res = 0;
 	u64 mask64 = mask;
@@ -108,6 +110,54 @@ void MDIO_voidSetPinMode(u8 Copy_u8Port, u8 Copy_u8Pin, u8 Copy_PinMode){
 	}
 }
 
+void MDIO_voidSetPortMode(u8 Copy_u8Port, u16 Copy_u8Mask, u8 Copy_PinMode){
+	u64 Local_u64CRValue;
+	u8 Local_u8PullUP = 2;	//not input
+	u64 Local_u64Mask = MLocal_u64ExpandMask(Copy_u8Mask);
+
+	if (Copy_PinMode == MDIO_MODE_INPUT_PULLUP || Copy_PinMode == MDIO_MODE_INPUT_PULLDOWN){
+		Local_u8PullUP = Copy_PinMode & 1;
+		Copy_PinMode >>= 1;
+	}
+
+	Local_u64CRValue = (u64)Copy_PinMode;
+	Local_u64CRValue |= Local_u64CRValue << 1*4;
+	Local_u64CRValue |= Local_u64CRValue << 2*4;
+	Local_u64CRValue |= Local_u64CRValue << 4*4;
+	Local_u64CRValue |= Local_u64CRValue << 8*4;
+	Local_u64CRValue &= Local_u64Mask;
+	switch(Copy_u8Port)
+	{
+		case MDIO_PORTA:
+			MDIO_GPIOA->CR &= ~Local_u64Mask ;
+			MDIO_GPIOA->CR |=  Local_u64CRValue;
+			if(Local_u8PullUP == 0)	//input pull up
+				MDIO_GPIOA->ODR &= ~Local_u64Mask ;
+			else if(Local_u8PullUP == 1)	//input pull down
+				MDIO_GPIOA->ODR |= Local_u64Mask ;
+			break;
+		case MDIO_PORTB:
+			MDIO_GPIOB->CR &= ~Local_u64Mask ;
+			MDIO_GPIOB->CR |=  Local_u64CRValue;
+			if(Local_u8PullUP == 0)	//input pull up
+				MDIO_GPIOB->ODR &= ~Local_u64Mask ;
+			else if(Local_u8PullUP == 1)	//input pull down
+				MDIO_GPIOB->ODR |= Local_u64Mask ;
+			break;
+		case MDIO_PORTC:
+			MDIO_GPIOC->CR &= ~Local_u64Mask ;
+			MDIO_GPIOC->CR |=  Local_u64CRValue;
+			if(Local_u8PullUP == 0)	//input pull up
+				MDIO_GPIOC->ODR &= ~Local_u64Mask ;
+			else if(Local_u8PullUP == 1)	//input pull down
+				MDIO_GPIOC->ODR |= Local_u64Mask ;
+			break;
+		default:
+			/* Report Error */
+			break;
+	}
+
+}
 void MDIO_voidSetPortValue(u8 Copy_u8Port, u16 Copy_u8Mask, u16 Copy_u8Value){
 	switch(Copy_u8Port){
 	case MDIO_PORTA:	MDIO_GPIOA->ODR = (MDIO_GPIOA->ODR & ~Copy_u8Mask) | (Copy_u8Value & Copy_u8Mask);	break;
