@@ -1,0 +1,12 @@
+#ifndef HLCD_CONFIG_H
+#define HLCD_CONFIG_H
+
+#define HLCD_CONTROL_PORT MDIO_PORTB
+#define HLCD_RS	MDIO_PIN_12
+#define HLCD_RW	MDIO_PIN_13
+#define HLCD_EN	MDIO_PIN_14
+
+#define HLCD_DATA_PORT	MDIO_PORTA
+
+
+#endif

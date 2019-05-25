@@ -6,8 +6,8 @@
 #include "MDIO_interface.h"
 #include "HLCD_interface.h"
 
-void latchEnablePin(u8 delay);
-void numberToString(s32 i, u8 buff[]);
+static void latchEnablePin(u8 delay);
+static void numberToString(s32 i, u8 buff[]);
 
 
 void HLCD_init(void){
