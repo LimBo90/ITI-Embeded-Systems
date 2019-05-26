@@ -39,7 +39,7 @@
 #define MDIO_MODE_OUTPUT_OPENDRAIN_10     0b0101
 #define MDIO_MODE_OUTPUT_OPENDRAIN_2      0b0110
 #define MDIO_MODE_OUTPUT_OPENDRAIN_50     0b0111
-//AlternMate function output
+//Alternate function output
 #define MDIO_MODE_AF_OUTPUT_PUSHPULL_10      0b1001
 #define MDIO_MODE_AF_OUTPUT_PUSHPULL_2       0b1010
 #define MDIO_MODE_AF_OUTPUT_PUSHPULL_50      0b1011
@@ -49,8 +49,8 @@
 //Input
 #define MDIO_MODE_INPUT_ANALOG               0b0000
 #define MDIO_MODE_INPUT_FLOATING             0b0100
-#define MDIO_MODE_INPUT_PULLUP               0b10001
-#define MDIO_MODE_INPUT_PULLDOWN             0b10000
+#define MDIO_MODE_INPUT_PULLUP               0b1000
+#define MDIO_MODE_INPUT_PULLDOWN             0b1100
 
 void MDIO_voidInit(void);
 void MDIO_voidSetPinValue(u8 Copy_u8Port, u8 Copy_u8Pin, u8 Copy_u8PinVal);

@@ -6,7 +6,7 @@ typedef struct{
 	u64 CR;
 	u32 IDR;
 	u32 ODR;
-	u32 BSR;
+	u32 BSRR;
 	u32 BRR;
 	u32 LCKR;
 }GPIO;

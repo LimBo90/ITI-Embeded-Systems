@@ -1,8 +1,9 @@
 #include "LSTD_TYPES.h"
 #include "LUTILS.h"
 
-#include "MDIO_interface.h"
 #include "MDIO_private.h"
+#include "MDIO_interface.h"
+#include "MDIO_config.h"
 
 //https://stackoverflow.com/questions/38881877/bit-hack-expanding-bits
 //
@@ -31,10 +32,258 @@ static u64 MLocal_u64ExpandMask(u16 mask){
 
 
 void MDIO_voidInit(void){
-//	MDIO_GPIOC->CR = 0x2222222200000000;
-//	MDIO_GPIOA->CR = 0x0002000000000000;
-//	MDIO_GPIOB->CR = 0x0000000000000000;
 
+	#if DIO_U8_PA0_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOA->ODR, MDIO_PIN_0);
+		#undef DIO_U8_PA0_MODE
+		#define DIO_U8_PA0_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PA1_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOA->ODR, MDIO_PIN_1);
+		#undef DIO_U8_PA1_MODE
+		#define DIO_U8_PA1_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PA2_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOA->ODR, MDIO_PIN_2);
+		#undef DIO_U8_PA2_MODE
+		#define DIO_U8_PA2_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PA3_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOA->ODR, MDIO_PIN_3);
+		#undef DIO_U8_PA3_MODE
+		#define DIO_U8_PA3_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PA4_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOA->ODR, MDIO_PIN_4);
+		#undef DIO_U8_PA4_MODE
+		#define DIO_U8_PA4_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PA5_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOA->ODR, MDIO_PIN_5);
+		#undef DIO_U8_PA5_MODE
+		#define DIO_U8_PA5_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PA6_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOA->ODR, MDIO_PIN_6);
+		#undef DIO_U8_PA6_MODE
+		#define DIO_U8_PA6_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PA7_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOA->ODR, MDIO_PIN_7);
+		#undef DIO_U8_PA7_MODE
+		#define DIO_U8_PA7_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PA8_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOA->ODR, MDIO_PIN_8);
+		#undef DIO_U8_PA8_MODE
+		#define DIO_U8_PA8_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PA9_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOA->ODR, MDIO_PIN_9);
+		#undef DIO_U8_PA9_MODE
+		#define DIO_U8_PA9_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PA10_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOA->ODR, MDIO_PIN_10);
+		#undef DIO_U8_PA10_MODE
+		#define DIO_U8_PA10_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PA11_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOA->ODR, MDIO_PIN_11);
+		#undef DIO_U8_PA11_MODE
+		#define DIO_U8_PA11_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PA12_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOA->ODR, MDIO_PIN_12);
+		#undef DIO_U8_PA12_MODE
+		#define DIO_U8_PA12_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PA13_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOA->ODR, MDIO_PIN_13);
+		#undef DIO_U8_PA13_MODE
+		#define DIO_U8_PA13_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PA14_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOA->ODR, MDIO_PIN_14);
+		#undef DIO_U8_PA14_MODE
+		#define DIO_U8_PA14_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PA15_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOA->ODR, MDIO_PIN_15);
+		#undef DIO_U8_PA15_MODE
+		#define DIO_U8_PA15_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PB0_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOB->ODR, MDIO_PIN_0);
+		#undef DIO_U8_PB0_MODE
+		#define DIO_U8_PB0_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PB1_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOB->ODR, MDIO_PIN_1);
+		#undef DIO_U8_PB1_MODE
+		#define DIO_U8_PB1_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PB2_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOB->ODR, MDIO_PIN_2);
+		#undef DIO_U8_PB2_MODE
+		#define DIO_U8_PB2_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PB3_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOB->ODR, MDIO_PIN_3);
+		#undef DIO_U8_PB3_MODE
+		#define DIO_U8_PB3_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PB4_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOB->ODR, MDIO_PIN_4);
+		#undef DIO_U8_PB4_MODE
+		#define DIO_U8_PB4_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PB5_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOB->ODR, MDIO_PIN_5);
+		#undef DIO_U8_PB5_MODE
+		#define DIO_U8_PB5_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PB6_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOB->ODR, MDIO_PIN_6);
+		#undef DIO_U8_PB6_MODE
+		#define DIO_U8_PB6_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PB7_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOB->ODR, MDIO_PIN_7);
+		#undef DIO_U8_PB7_MODE
+		#define DIO_U8_PB7_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PB8_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOB->ODR, MDIO_PIN_8);
+		#undef DIO_U8_PB8_MODE
+		#define DIO_U8_PB8_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PB9_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOB->ODR, MDIO_PIN_9);
+		#undef DIO_U8_PB9_MODE
+		#define DIO_U8_PB9_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PB10_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOB->ODR, MDIO_PIN_10);
+		#undef DIO_U8_PB10_MODE
+		#define DIO_U8_PB10_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PB11_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOB->ODR, MDIO_PIN_11);
+		#undef DIO_U8_PB11_MODE
+		#define DIO_U8_PB11_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PB12_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOB->ODR, MDIO_PIN_12);
+		#undef DIO_U8_PB12_MODE
+		#define DIO_U8_PB12_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PB13_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOB->ODR, MDIO_PIN_13);
+		#undef DIO_U8_PB13_MODE
+		#define DIO_U8_PB13_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PB14_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOB->ODR, MDIO_PIN_14);
+		#undef DIO_U8_PB14_MODE
+		#define DIO_U8_PB14_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PB15_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOB->ODR, MDIO_PIN_15);
+		#undef DIO_U8_PB15_MODE
+		#define DIO_U8_PB15_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PC13_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOC->ODR, MDIO_PIN_13);
+		#undef DIO_U8_PC13_MODE
+		#define DIO_U8_PC13_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PC14_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOC->ODR, MDIO_PIN_14);
+		#undef DIO_U8_PC14_MODE
+		#define DIO_U8_PC14_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+	#if DIO_U8_PC15_MODE == MDIO_MODE_INPUT_PULLUP
+		LUTILS_SET_BIT(GPIOC->ODR, MDIO_PIN_15);
+		#undef DIO_U8_PC15_MODE
+		#define DIO_U8_PC15_MODE MDIO_MODE_INPUT_PULLDOWN
+	#endif
+	
+
+	MDIO_GPIOA->CR = (u64) (((u64)DIO_U8_PA0_MODE)			|
+					 		((u64)DIO_U8_PA1_MODE<<4*1)		|
+					 		((u64)DIO_U8_PA2_MODE<<4*2)		|
+					 		((u64)DIO_U8_PA3_MODE<<4*3)		|
+					 		((u64)DIO_U8_PA4_MODE<<4*4)		|
+					 		((u64)DIO_U8_PA5_MODE<<4*5)		|
+					 		((u64)DIO_U8_PA6_MODE<<4*6)		|
+					 		((u64)DIO_U8_PA7_MODE<<4*7)		|
+					 		((u64)DIO_U8_PA8_MODE<<4*8)		|
+					 		((u64)DIO_U8_PA9_MODE<<4*9)		|
+					 		((u64)DIO_U8_PA10_MODE<<4*10)	|
+					 		((u64)DIO_U8_PA11_MODE<<4*11)	|
+					 		((u64)DIO_U8_PA12_MODE<<4*12)	|
+					 		((u64)DIO_U8_PA13_MODE<<4*13)	|
+					 		((u64)DIO_U8_PA14_MODE<<4*14)	|
+					 		((u64)DIO_U8_PA15_MODE<<4*15));
+
+	MDIO_GPIOB->CR = (u64) ((u64)(DIO_U8_PB0_MODE)			|
+							((u64)DIO_U8_PB1_MODE<<4*1)		|
+							((u64)DIO_U8_PB2_MODE<<4*2)		|
+							((u64)DIO_U8_PB3_MODE<<4*3)		|
+							((u64)DIO_U8_PB4_MODE<<4*4)		|
+							((u64)DIO_U8_PB5_MODE<<4*5)		|
+							((u64)DIO_U8_PB6_MODE<<4*6)		|
+							((u64)DIO_U8_PB7_MODE<<4*7)		|
+							((u64)DIO_U8_PB8_MODE<<4*8)		|
+							((u64)DIO_U8_PB9_MODE<<4*9)		|
+							((u64)DIO_U8_PB10_MODE<<4*10)	|
+							((u64)DIO_U8_PB11_MODE<<4*11)	|
+							((u64)DIO_U8_PB12_MODE<<4*12)	|
+							((u64)DIO_U8_PB13_MODE<<4*13)	|
+							((u64)DIO_U8_PB14_MODE<<4*14)	|
+							((u64)DIO_U8_PB15_MODE<<4*15));
+
+	MDIO_GPIOC->CR = (u64) (((u64) DIO_U8_PC13_MODE<<4*13)	|
+					 		((u64) DIO_U8_PC14_MODE<<4*14)	|
+					 		((u64) DIO_U8_PC15_MODE<<4*15));
+	MDIO_GPIOA->ODR = 0;
+	MDIO_GPIOB->ODR = 0;
+	MDIO_GPIOC->ODR = 0;
 }
 
 void MDIO_voidSetPinValue(u8 Copy_u8Port, u8 Copy_u8Pin, u8 Copy_u8PinVal){
@@ -63,62 +312,69 @@ void MDIO_voidSetPinValue(u8 Copy_u8Port, u8 Copy_u8Pin, u8 Copy_u8PinVal){
 void MDIO_voidGetPinValue(u8 Copy_u8Port, u8 Copy_u8Pin, u8 *Copy_u8PinVal){
 	switch(Copy_u8Port)
 	{
-		case MDIO_PORTA:	*Copy_u8PinVal = LUTILS_GET_BIT(MDIO_GPIOA->IDR, Copy_u8Pin);	break;
-		case MDIO_PORTB:	*Copy_u8PinVal = LUTILS_GET_BIT(MDIO_GPIOB->IDR, Copy_u8Pin);	break;
-		case MDIO_PORTC:	*Copy_u8PinVal = LUTILS_GET_BIT(MDIO_GPIOC->IDR, Copy_u8Pin);	break;
+		case MDIO_PORTA:	*Copy_u8PinVal = LUTILS_GET_BIT(MDIO_GPIOA->IDR, Copy_u8Pin)? DIO_U8_HIGH : DIO_U8_LOW;	break;
+		case MDIO_PORTB:	*Copy_u8PinVal = LUTILS_GET_BIT(MDIO_GPIOB->IDR, Copy_u8Pin)? DIO_U8_HIGH : DIO_U8_LOW;	break;
+		case MDIO_PORTC:	*Copy_u8PinVal = LUTILS_GET_BIT(MDIO_GPIOC->IDR, Copy_u8Pin)? DIO_U8_HIGH : DIO_U8_LOW;	break;
 		default: /* Report Error */ 														break;
 	}
 }
 
 void MDIO_voidSetPinMode(u8 Copy_u8Port, u8 Copy_u8Pin, u8 Copy_PinMode){
-	u8 Local_u8PullUP = 2;	//not input
+	u8 Local_u8PinMode;
+	Copy_PinMode &= 0x0F;
+	Local_u8PinMode  = Copy_PinMode;
 
-	if (Copy_PinMode == MDIO_MODE_INPUT_PULLUP || Copy_PinMode == MDIO_MODE_INPUT_PULLDOWN){
-		Local_u8PullUP = Copy_PinMode & 1;
-		Copy_PinMode >>= 1;
-	}
+	if (Copy_PinMode == MDIO_MODE_INPUT_PULLDOWN)
+		Copy_PinMode = MDIO_MODE_INPUT_PULLUP;
 
 	switch(Copy_u8Port)
 	{
 		case MDIO_PORTA:
-			MDIO_GPIOA->CR &= (~((u64)0x0F << (Copy_u8Pin*4)));
+			MDIO_GPIOA->CR &= ~((u64)0x0F << (Copy_u8Pin*4));
 			MDIO_GPIOA->CR |=  ((u64)Copy_PinMode << (Copy_u8Pin*4));
-			if(Local_u8PullUP == 0)	//input pull up
-				LUTILS_CLR_BIT(MDIO_GPIOA->ODR, Copy_u8Pin);
-			else if(Local_u8PullUP == 1)	//input pull down
-				LUTILS_SET_BIT(MDIO_GPIOA->ODR, Copy_u8Pin);
 			break;
 		case MDIO_PORTB:
 			MDIO_GPIOB->CR &= (~((u64)0x0F << (Copy_u8Pin*4)));
 			MDIO_GPIOB->CR |= ((u64)Copy_PinMode << (Copy_u8Pin*4));
-			if(Local_u8PullUP == 0)	//input pull up
-				LUTILS_CLR_BIT(MDIO_GPIOB->ODR, Copy_u8Pin);
-			else if(Local_u8PullUP == 1)
-				LUTILS_SET_BIT(MDIO_GPIOB->ODR, Copy_u8Pin);
 			break;
 		case MDIO_PORTC:
 			MDIO_GPIOC->CR &= (~((u64)0x0F << (Copy_u8Pin*4)));
 			MDIO_GPIOC->CR |= ((u64)Copy_PinMode << (Copy_u8Pin*4));
-			if(Local_u8PullUP == 0)	//input pull up
-				LUTILS_CLR_BIT(MDIO_GPIOC->ODR, Copy_u8Pin);
-			else if(Local_u8PullUP == 1)	//input pull down
-				LUTILS_SET_BIT(MDIO_GPIOC->ODR, Copy_u8Pin);
 			break;
 		default:
 			/* Report Error */
 			break;
 	}
+
+
+	if(Local_u8PinMode == MDIO_MODE_INPUT_PULLDOWN){
+		switch(Copy_u8Port){
+			case MDIO_PORTA:	LUTILS_CLR_BIT(MDIO_GPIOA->ODR, Copy_u8Pin); break;
+			case MDIO_PORTB:	LUTILS_CLR_BIT(MDIO_GPIOB->ODR, Copy_u8Pin); break;
+			case MDIO_PORTC:	LUTILS_CLR_BIT(MDIO_GPIOC->ODR, Copy_u8Pin); break;
+			default:	/* Report Error */									 break;
+		}
+	}else if(Local_u8PinMode == MDIO_MODE_INPUT_PULLUP){
+		switch(Copy_u8Port){
+			case MDIO_PORTA:	LUTILS_SET_BIT(MDIO_GPIOA->ODR, Copy_u8Pin); break;
+			case MDIO_PORTB:	LUTILS_SET_BIT(MDIO_GPIOB->ODR, Copy_u8Pin); break;
+			case MDIO_PORTC:	LUTILS_SET_BIT(MDIO_GPIOC->ODR, Copy_u8Pin); break;
+			default:	/* Report Error */									 break;
+		}
+	}
 }
 
 void MDIO_voidSetPortMode(u8 Copy_u8Port, u16 Copy_u8Mask, u8 Copy_PinMode){
 	u64 Local_u64CRValue;
-	u8 Local_u8PullUP = 2;	//not input
+	u8 Local_u8PinMode;
+
+	Copy_PinMode &= 0x0F;
+	Local_u8PinMode = Copy_PinMode;
 	u64 Local_u64Mask = MLocal_u64ExpandMask(Copy_u8Mask);
 
-	if (Copy_PinMode == MDIO_MODE_INPUT_PULLUP || Copy_PinMode == MDIO_MODE_INPUT_PULLDOWN){
-		Local_u8PullUP = Copy_PinMode & 1;
-		Copy_PinMode >>= 1;
-	}
+	// make the 4 mode bits in the pulldown to be 0b1000 as input pullup
+	if (Copy_PinMode == MDIO_MODE_INPUT_PULLDOWN)
+		Copy_PinMode = MDIO_MODE_INPUT_PULLUP;
 
 	Local_u64CRValue = (u64)Copy_PinMode;
 	Local_u64CRValue |= Local_u64CRValue << 1*4;
@@ -126,35 +382,41 @@ void MDIO_voidSetPortMode(u8 Copy_u8Port, u16 Copy_u8Mask, u8 Copy_PinMode){
 	Local_u64CRValue |= Local_u64CRValue << 4*4;
 	Local_u64CRValue |= Local_u64CRValue << 8*4;
 	Local_u64CRValue &= Local_u64Mask;
+	
 	switch(Copy_u8Port)
 	{
 		case MDIO_PORTA:
 			MDIO_GPIOA->CR &= ~Local_u64Mask ;
 			MDIO_GPIOA->CR |=  Local_u64CRValue;
-			if(Local_u8PullUP == 0)	//input pull up
-				MDIO_GPIOA->ODR &= ~Local_u64Mask ;
-			else if(Local_u8PullUP == 1)	//input pull down
-				MDIO_GPIOA->ODR |= Local_u64Mask ;
 			break;
 		case MDIO_PORTB:
 			MDIO_GPIOB->CR &= ~Local_u64Mask ;
 			MDIO_GPIOB->CR |=  Local_u64CRValue;
-			if(Local_u8PullUP == 0)	//input pull up
-				MDIO_GPIOB->ODR &= ~Local_u64Mask ;
-			else if(Local_u8PullUP == 1)	//input pull down
-				MDIO_GPIOB->ODR |= Local_u64Mask ;
 			break;
 		case MDIO_PORTC:
 			MDIO_GPIOC->CR &= ~Local_u64Mask ;
 			MDIO_GPIOC->CR |=  Local_u64CRValue;
-			if(Local_u8PullUP == 0)	//input pull up
-				MDIO_GPIOC->ODR &= ~Local_u64Mask ;
-			else if(Local_u8PullUP == 1)	//input pull down
-				MDIO_GPIOC->ODR |= Local_u64Mask ;
 			break;
 		default:
 			/* Report Error */
 			break;
+	}
+
+
+	if(Local_u8PinMode == MDIO_MODE_INPUT_PULLDOWN){
+		switch(Copy_u8Port){
+		case MDIO_PORTA:	MDIO_GPIOA->ODR &= ~Local_u64Mask ;		break;
+		case MDIO_PORTB:	MDIO_GPIOB->ODR &= ~Local_u64Mask ;		break;
+		case MDIO_PORTC:	MDIO_GPIOC->ODR &= ~Local_u64Mask ;		break;
+		default: /*Report Error */									break;
+		}
+	}else if(Local_u8PinMode == MDIO_MODE_INPUT_PULLUP){
+		switch(Copy_u8Port){
+		case MDIO_PORTA:	MDIO_GPIOA->ODR |= Local_u64Mask ;		break;
+		case MDIO_PORTB:	MDIO_GPIOB->ODR |= Local_u64Mask ;		break;
+		case MDIO_PORTC:	MDIO_GPIOC->ODR |= Local_u64Mask ;		break;
+		default: /*Report Error */									break;
+		}
 	}
 
 }
