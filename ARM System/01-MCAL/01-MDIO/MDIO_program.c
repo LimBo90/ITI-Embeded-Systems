@@ -364,13 +364,13 @@ void MDIO_voidSetPinMode(u8 Copy_u8Port, u8 Copy_u8Pin, u8 Copy_PinMode){
 	}
 }
 
-void MDIO_voidSetPortMode(u8 Copy_u8Port, u16 Copy_u8Mask, u8 Copy_PinMode){
+void MDIO_voidSetPortMode(u8 Copy_u8Port, u16 Copy_u16Mask, u8 Copy_PinMode){
 	u64 Local_u64CRValue;
 	u8 Local_u8PinMode;
 
 	Copy_PinMode &= 0x0F;
 	Local_u8PinMode = Copy_PinMode;
-	u64 Local_u64Mask = MLocal_u64ExpandMask(Copy_u8Mask);
+	u64 Local_u64Mask = MLocal_u64ExpandMask(Copy_u16Mask);
 
 	// make the 4 mode bits in the pulldown to be 0b1000 as input pullup
 	if (Copy_PinMode == MDIO_MODE_INPUT_PULLDOWN)
@@ -405,16 +405,16 @@ void MDIO_voidSetPortMode(u8 Copy_u8Port, u16 Copy_u8Mask, u8 Copy_PinMode){
 
 	if(Local_u8PinMode == MDIO_MODE_INPUT_PULLDOWN){
 		switch(Copy_u8Port){
-		case MDIO_PORTA:	MDIO_GPIOA->ODR &= ~Local_u64Mask ;		break;
-		case MDIO_PORTB:	MDIO_GPIOB->ODR &= ~Local_u64Mask ;		break;
-		case MDIO_PORTC:	MDIO_GPIOC->ODR &= ~Local_u64Mask ;		break;
+		case MDIO_PORTA:	MDIO_GPIOA->ODR &= ~Copy_u16Mask ;		break;
+		case MDIO_PORTB:	MDIO_GPIOB->ODR &= ~Copy_u16Mask ;		break;
+		case MDIO_PORTC:	MDIO_GPIOC->ODR &= ~Copy_u16Mask ;		break;
 		default: /*Report Error */									break;
 		}
 	}else if(Local_u8PinMode == MDIO_MODE_INPUT_PULLUP){
 		switch(Copy_u8Port){
-		case MDIO_PORTA:	MDIO_GPIOA->ODR |= Local_u64Mask ;		break;
-		case MDIO_PORTB:	MDIO_GPIOB->ODR |= Local_u64Mask ;		break;
-		case MDIO_PORTC:	MDIO_GPIOC->ODR |= Local_u64Mask ;		break;
+		case MDIO_PORTA:	MDIO_GPIOA->ODR |= Copy_u16Mask ;		break;
+		case MDIO_PORTB:	MDIO_GPIOB->ODR |= Copy_u16Mask ;		break;
+		case MDIO_PORTC:	MDIO_GPIOC->ODR |= Copy_u16Mask ;		break;
 		default: /*Report Error */									break;
 		}
 	}
