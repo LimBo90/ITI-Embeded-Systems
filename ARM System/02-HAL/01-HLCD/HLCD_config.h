@@ -7,6 +7,7 @@
 #define HLCD_EN	MDIO_PIN_14
 
 #define HLCD_DATA_PORT	MDIO_PORTA
+#define HLCD_U8_MODE_8BIT 0
 
 
 #endif

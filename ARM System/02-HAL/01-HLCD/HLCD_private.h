@@ -39,8 +39,8 @@
 //cursor or display shift
 #define SHIFT_CURSOR_LEFT	0x10
 #define SHIFT_CURSOR_RIGHT	0x14
-#define SHIFT_DISPLAY_LEFT	0x18
-#define SHIFT_DISPLAY_RIGHT	0x1C
+#define SHIFT_DISPLAY_LEFT	0x1C
+#define SHIFT_DISPLAY_RIGHT	0x18
 
 
 #endif

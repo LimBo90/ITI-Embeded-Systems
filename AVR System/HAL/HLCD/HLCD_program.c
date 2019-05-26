@@ -167,7 +167,12 @@ void HLCD_shiftDisplay(u8 direction){
 	}
 }
 
-
+/**
+ * Adds a custom character to the display memory.
+ * To display that custom character pass indx of the character to writeData().
+ * Input: 	indx	the index of the custom character. Range between 0 to 7. Used to display the character by passing it to writeData()
+ * 			pattern array of 7 elements each element is an 8 bit pattern for each row of the character
+ * */
 void HLCD_addCustomCharacter(u8 indx, u8 pattern[7]){
 	//only 8 custom characters can be written from indx 0 to 7
 	if(indx < 0 || indx > 7)
