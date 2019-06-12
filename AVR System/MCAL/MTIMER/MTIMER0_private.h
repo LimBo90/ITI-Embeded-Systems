@@ -37,9 +37,6 @@
 #define MTIMER0_TCCR0 (*(volatile u8 *) (0x53))
 #define MTIMER0_TCNT0 (*(volatile u8 *) (0x52))
 #define MTIMER0_OCR0 (*(volatile u8 *) (0x5C))
-#define MTIMER_TIMSK (*(volatile u8 *) (0x59))
-#define MTIMER_TIFR (*(volatile u8 *) (0x58))
-#define MTIMER_SREG (*(volatile u8 *) (0x5F))
 
 /*********** PINS *********/
 //TCCR0
