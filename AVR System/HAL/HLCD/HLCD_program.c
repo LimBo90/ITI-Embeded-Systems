@@ -4,43 +4,62 @@
 #include "LUTILS.h"
 #include "util/delay.h"
 #include "MDIO_interface.h"
+#include "HLCD_private.h"
 #include "HLCD_interface.h"
+#include "HLCD_config.h"
+
 
 static void latchEnablePin(u8 delay);
 static void numberToString(s32 i, u8 buff[]);
 
 
 void HLCD_init(void){
+	u8 displayControl;
+
 	_delay_ms(30);
 	//Sets control pins and data port pins to be output
 	MDIO_setPinDirection(HLCD_CONTROL_PORT, HLCD_RS, OUTPUT);
 	MDIO_setPinDirection(HLCD_CONTROL_PORT, HLCD_RW, OUTPUT);
 	MDIO_setPinDirection(HLCD_CONTROL_PORT, HLCD_EN, OUTPUT);
-	if(HLCD_MODE_8_BIT)
+#if HLCD_MODE == HLCD_MODE_8_BIT
 		MDIO_setPortDirection(HLCD_DATA_PORT, 0xFF, OUTPUT);
-	else
+#elif HLCD_MODE == HLCD_MODE_4_BIT
 		MDIO_setPortDirection(HLCD_DATA_PORT, 0xF0, OUTPUT);
 	_delay_ms(1);
+#else
+	#error "HLCD_MODE not specified correctly in HLCD_config.h. Please set to either HLCD_MODE_8_BIT or HLCD_MODE_4_BIT"
+#endif
+
 
 	//Function set
 	//sets the data length to 8bit or 4bit mode
 	//sets the lcd to be 2 line display
 	//sets the font to be 5 x 10 dots
-	if(HLCD_MODE_8_BIT){
-		HLCD_writeCMD(FNSET_DATA_LENGTH_8_BIT| FNSET_TWO_LINE_DISPLAY | FNSET_FONT_5x7);
-	}else{
-		//writes the upper 4 bits of command to the data port
-		MDIO_setPortToValue(HLCD_DATA_PORT, 0xF0, 0x20);
-		latchEnablePin(2);
-		HLCD_writeCMD(FNSET_DATA_LENGTH_4_BIT| FNSET_TWO_LINE_DISPLAY | FNSET_FONT_5x7);
-	}
-	_delay_ms(1);
+
+#if HLCD_MODE == HLCD_MODE_8_BIT
+	HLCD_writeCMD(FNSET_DATA_LENGTH_8_BIT| FNSET_TWO_LINE_DISPLAY | FNSET_FONT_5x7);
+#elif HLCD_MODE == HLCD_MODE_4_BIT
+	//writes the upper 4 bits of command to the data port
+	MDIO_setPortToValue(HLCD_DATA_PORT, 0xF0, 0x20);
+	latchEnablePin(2);
+	HLCD_writeCMD(FNSET_DATA_LENGTH_4_BIT| FNSET_TWO_LINE_DISPLAY | FNSET_FONT_5x7);
+#else
+	#error "HLCD_MODE not specified correctly in HLCD_config.h. Please set to either HLCD_MODE_8_BIT or HLCD_MODE_4_BIT"
+#endif
 
 	//Display ON/OFF Control
 	//sets the display to be ON
 	//display the cursor
 	//makes the cursor blink
-	HLCD_writeCMD(DISPLAYCONTROL_DISPLAY_ON | DISPLAYCONTROL_CURSOR_ON | DISPLAYCONTROL_CURSOR_BLINK_ON);
+
+#if HLCD_CURSOR_MODE != HLCD_CURSOR_ON && HLCD_CURSOR_MODE != HLCD_CURSOR_OFF
+#error "HLCD_CURSOR_MODE not specified correctly in HCD_config.h. Please setto either HLCD_CURSOR_ON or HLCD_CURSOR_off"
+#endif
+
+#if HLCD_CURSOR_BLINK != HLCD_CURSOR_BLINK_OFF && HLCD_CURSOR_MODE != HLCD_CURSOR_BLINK_ON
+#error "HLCD_CURSOR_MODE not specified correctly in HCD_config.h. Please setto either HLCD_CURSOR_BLINK_ON or HLCD_CURSOR_BLINK_OFF"
+#endif
+	HLCD_writeCMD(DISPLAYCONTROL_DISPLAY_ON | HLCD_CURSOR_MODE | HLCD_CURSOR_BLINK);
 	_delay_ms(1);
 
 	//Clear Display
@@ -63,20 +82,22 @@ void HLCD_writeCMD(u8 cmd){
 	MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_RW, LOW);
 	//sets EN = LOW preparing for the latch
 	MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, LOW);
-	if(HLCD_MODE_8_BIT){
-		//writes the command to the data port
-		MDIO_setPortToValue(HLCD_DATA_PORT, 0xFF, cmd);
-		latchEnablePin(2);
-	}else{
-		//writes the upper 4 bits of command to the data port
-		MDIO_setPortToValue(HLCD_DATA_PORT, 0xF0, cmd);
-		latchEnablePin(2);
 
-		//writes the lower 4 bits command to the data port
-		MDIO_setPortToValue(HLCD_DATA_PORT, 0xF0, cmd<<4);
-		latchEnablePin(2);
-	}
-	return;
+#if HLCD_MODE == HLCD_MODE_8_BIT
+	//writes the command to the data port
+	MDIO_setPortToValue(HLCD_DATA_PORT, 0xFF, cmd);
+	latchEnablePin(2);
+#elif HLCD_MODE == HLCD_MODE_4_BIT
+	//writes the upper 4 bits of command to the data port
+	MDIO_setPortToValue(HLCD_DATA_PORT, 0xF0, cmd);
+	latchEnablePin(2);
+
+	//writes the lower 4 bits command to the data port
+	MDIO_setPortToValue(HLCD_DATA_PORT, 0xF0, cmd<<4);
+	latchEnablePin(2);
+#else
+	#error "HLCD_MODE not specified correctly in HLCD_config.h. Please set to either HLCD_MODE_8_BIT or HLCD_MODE_4_BIT"
+#endif
 }
 
 /**
@@ -90,19 +111,21 @@ void HLCD_writeData(u8 data){
 	//sets EN = LOW preparing for the latch
 	MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, LOW);
 
-	if(HLCD_MODE_8_BIT){
-		//writes the command to the data port
-		MDIO_setPortToValue(HLCD_DATA_PORT, 0xFF, data);
-		latchEnablePin(2);
-	}else{
-		//writes the upper 4 bits of data to the data port
-		MDIO_setPortToValue(HLCD_DATA_PORT, 0xF0, data);
-		latchEnablePin(2);
+#if HLCD_MODE == HLCD_MODE_8_BIT
+	//writes the command to the data port
+	MDIO_setPortToValue(HLCD_DATA_PORT, 0xFF, data);
+	latchEnablePin(2);
+#elif HLCD_MODE == HLCD_MODE_4_BIT
+	//writes the upper 4 bits of data to the data port
+	MDIO_setPortToValue(HLCD_DATA_PORT, 0xF0, data);
+	latchEnablePin(2);
 
-		//writes the lower 4 bits of data to the data port
-		MDIO_setPortToValue(HLCD_DATA_PORT, 0xF0, data<<4);
-		latchEnablePin(2);
-	}
+	//writes the lower 4 bits of data to the data port
+	MDIO_setPortToValue(HLCD_DATA_PORT, 0xF0, data<<4);
+	latchEnablePin(2);
+#else
+	#error "HLCD_MODE not specified correctly in HLCD_config.h. Please set to either HLCD_MODE_8_BIT or HLCD_MODE_4_BIT"
+#endif
 	return;
 }
 
@@ -145,26 +168,26 @@ void HLCD_setCursor(u8 row, u8 col){
 }
 
 
-void HLCD_shiftCursor(u8 direction){
-	switch(direction){
-	case HLCD_LEFT:
+void HLCD_shiftCursorLeft(u8 n){
+	for(; n > 0; n--)
 		HLCD_writeCMD(SHIFT_CURSOR_LEFT);
-		break;
-	case HLCD_RIGHT:
-		HLCD_writeCMD(SHIFT_CURSOR_RIGHT);
-		break;
-	}
 }
 
-void HLCD_shiftDisplay(u8 direction){
-	switch(direction){
-	case HLCD_RIGHT:
-		HLCD_writeCMD(SHIFT_DISPLAY_LEFT);
-		break;
-	case HLCD_LEFT:
+void HLCD_shiftCursorRight(u8 n){
+	for(; n > 0; n--)
+		HLCD_writeCMD(SHIFT_CURSOR_RIGHT);
+}
+
+
+void HLCD_shiftDisplayRight(u8 n){
+	for(; n > 0; n--)
 		HLCD_writeCMD(SHIFT_DISPLAY_RIGHT);
-		break;
-	}
+
+}
+
+void HLCD_shiftDisplayLeft(u8 n){
+	for(; n > 0; n--)
+		HLCD_writeCMD(SHIFT_DISPLAY_LEFT);
 }
 
 /**
