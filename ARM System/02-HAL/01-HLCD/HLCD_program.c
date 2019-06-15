@@ -119,7 +119,7 @@ void HLCD_voidWriteStr(u8 str[]){
 	}
 }
 
-void HLCD_voidWriteNumber(u16 n){
+void HLCD_voidWriteNumber(u32 n){
 	u8 buffer[16];
 	HLocal_voidNumberToString(n, buffer);
 	HLCD_voidWriteStr(buffer);
@@ -206,7 +206,7 @@ static void HLocal_voidNumberToString(s32 i, u8 b[]){
         *p++ = '-';
         i *= -1;
     }
-    int shifter = i;
+    u32 shifter = i;
     do{ //Move to where representation ends
         ++p;
         shifter = shifter/10;

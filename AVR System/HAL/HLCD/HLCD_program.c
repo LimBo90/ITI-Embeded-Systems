@@ -140,7 +140,7 @@ void HLCD_writeStr(u8 str[]){
 	}
 }
 
-void HLCD_writeNumber(u16 n){
+void HLCD_writeNumber(u32 n){
 	u8 buffer[16];
 	numberToString(n, buffer);
 	HLCD_writeStr(buffer);
@@ -231,7 +231,7 @@ void numberToString(s32 i, u8 b[]){
         *p++ = '-';
         i *= -1;
     }
-    int shifter = i;
+    u32 shifter = i;
     do{ //Move to where representation ends
         ++p;
         shifter = shifter/10;
