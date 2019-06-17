@@ -35,7 +35,7 @@
 
 //UCSRC
 #define MUART_UCPOL 0
-#define MUART_UCSZ_MASK 0x30
+#define MUART_UCSZ_MASK 0b00110000
 #define MUART_USBS 	3
 #define MUART_UPM0  4
 #define MUART_UPM1  5
