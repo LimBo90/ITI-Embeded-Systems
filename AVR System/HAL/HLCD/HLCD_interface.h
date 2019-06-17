@@ -36,7 +36,7 @@ void HLCD_writeStr(u8 str[]);
 /**
  * Displays a number on the LCD
  */
-void HLCD_writeNumber(u32 n);
+void HLCD_writeNumber(u64 n);
 
 /**
  * changes the position of the cursor

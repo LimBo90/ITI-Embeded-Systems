@@ -10,12 +10,10 @@
 
 
 static void latchEnablePin(u8 delay);
-static void numberToString(s32 i, u8 buff[]);
+static void numberToString(u64 i, u8 buff[]);
 
 
 void HLCD_init(void){
-	u8 displayControl;
-
 	_delay_ms(30);
 	//Sets control pins and data port pins to be output
 	MDIO_setPinDirection(HLCD_CONTROL_PORT, HLCD_RS, OUTPUT);
@@ -140,8 +138,8 @@ void HLCD_writeStr(u8 str[]){
 	}
 }
 
-void HLCD_writeNumber(u32 n){
-	u8 buffer[16];
+void HLCD_writeNumber(u64 n){
+	u8 buffer[20];
 	numberToString(n, buffer);
 	HLCD_writeStr(buffer);
 }
@@ -225,13 +223,13 @@ void latchEnablePin(u8 delay){
 }
 
 
-void numberToString(s32 i, u8 b[]){
-    char* p = b;
+void numberToString(u64 i, u8 b[]){
+    u8* p = b;
     if(i<0){
         *p++ = '-';
         i *= -1;
     }
-    u32 shifter = i;
+    u64 shifter = i;
     do{ //Move to where representation ends
         ++p;
         shifter = shifter/10;

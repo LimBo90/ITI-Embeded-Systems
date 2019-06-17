@@ -3,7 +3,7 @@
 
 
 
-#define HLCD_CONTROL_PORT PORTD
+#define HLCD_CONTROL_PORT PORTC
 #define HLCD_RS	PIN_0
 #define HLCD_RW	PIN_1
 #define HLCD_EN	PIN_2
