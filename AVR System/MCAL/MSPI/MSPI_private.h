@@ -20,8 +20,8 @@
 
 //SPSR	Register Bits
 #define MSPI_SPI2X			0
-#define MSPI_WCOL			1
-#define MSPI_SPIF			2
+#define MSPI_WCOL			6
+#define MSPI_SPIF			7
 
 
 #define MSPI_SPDR 	 *((volatile u8*)(0x2F))

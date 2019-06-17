@@ -2,18 +2,112 @@
 #include "LSTD_TYPES.h"
 
 #include "MSPI_private.h"
-#include "MSPI_interface.h"
 #include "MSPI_config.h"
+#include "MSPI_interface.h"
 
 
 void MSPI_voidMasterInit(void){
-    
+	//enable spi
+	SET_BIT(MSPI_SPCR, MSPI_SPE);
+
+	//MSB or LSB first
+#if MSPI_CFG_DATA_ORDER == MSPI_DATA_ORDER_MSB_FIRST
+	CLR_BIT(MSPI_SPCR, MSPI_DORD);
+#elif MSPI_CFG_DATA_ORDER == MSPI_DATA_ORDER_LSB_FIRST
+	CLR_BIT(MSPI_SPCR, MSPI_DORD);
+#else
+	#error "MSPI_CFG_DATA_ORDER not specified correctly in HLCD_config.h. Please set to either MSPI_DATA_ORDER_MSB_FIRST or MSPI_DATA_ORDER_LSB_FIRST"
+#endif
+
+	//master
+	SET_BIT(MSPI_SPCR, MSPI_MSTR);
+
+	// clock polarity
+#if MSPI_CFG_CLK_POLARITY == MSPI_CLK_POLARITY_IDLE_HIGH
+	SET_BIT(MSPI_SPCR, MSPI_CPOL);
+#elif MSPI_CFG_CLK_POLARITY == MSPI_CLK_POLARITY_IDLE_LOW
+	CLR_BIT(MSPI_SPCR, MSPI_CPOL);
+#else
+	#error "MSPI_CFG_CLK_POLARITY not specified correctly in HLCD_config.h. Please set to either MSPI_CLK_POLARITY_IDLE_HIGH or MSPI_CLK_POLARITY_IDLE_LOW"
+#endif
+
+
+	// clock phase
+#if MSPI_CFG_CLK_PHASE == MSPI_CLK_PHASE_SAMPLE_ON_LEADING
+	CLR_BIT(MSPI_SPCR, MSPI_CPHA);
+#elif MSPI_CFG_CLK_PHASE == MSPI_CLK_PHASE_SAMPLE_ON_TRAILING
+	SET_BIT(MSPI_SPCR, MSPI_CPHA);
+#else
+	#error "MSPI_CFG_CLK_POLARITY not specified correctly in HLCD_config.h. Please set to either MSPI_CLK_POLARITY_IDLE_HIGH or MSPI_CLK_POLARITY_IDLE_LOW"
+#endif
+
+
+	// clock phase
+#if MSPI_CFG_SPEED_MODE == MSPI_SPEED_MODE_NORMAL
+	CLR_BIT(MSPI_SPSR, MSPI_SPI2X);
+#elif MSPI_CFG_SPEED_MODE == MSPI_SPEED_MODE_DOUBLE
+	SET_BIT(MSPI_SPSR, MSPI_SPI2X);
+#else
+	#error "MSPI_CFG_CLK_POLARITY not specified correctly in HLCD_config.h. Please set to either MSPI_CLK_POLARITY_IDLE_HIGH or MSPI_CLK_POLARITY_IDLE_LOW"
+#endif
+
+	MSPI_SPCR &= ~(0b11);
+	MSPI_SPCR |= MSPI_CFG_CLK_RATE;
 }
 
 void MSPI_voidSlaveInit(void){
+	//enable spi
+	SET_BIT(MSPI_SPCR, MSPI_SPE);
 
+	//MSB or LSB first
+#if MSPI_CFG_DATA_ORDER == MSPI_DATA_ORDER_MSB_FIRST
+	CLR_BIT(MSPI_SPCR, MSPI_DORD);
+#elif MSPI_CFG_DATA_ORDER == MSPI_DATA_ORDER_LSB_FIRST
+	CLR_BIT(MSPI_SPCR, MSPI_DORD);
+#else
+	#error "MSPI_CFG_DATA_ORDER not specified correctly in HLCD_config.h. Please set to either MSPI_DATA_ORDER_MSB_FIRST or MSPI_DATA_ORDER_LSB_FIRST"
+#endif
+
+	//slave
+	CLR_BIT(MSPI_SPCR, MSPI_MSTR);
+
+	// clock polarity
+#if MSPI_CFG_CLK_POLARITY == MSPI_CLK_POLARITY_IDLE_HIGH
+	SET_BIT(MSPI_SPCR, MSPI_CPOL);
+#elif MSPI_CFG_CLK_POLARITY == MSPI_CLK_POLARITY_IDLE_LOW
+	CLR_BIT(MSPI_SPCR, MSPI_CPOL);
+#else
+	#error "MSPI_CFG_CLK_POLARITY not specified correctly in HLCD_config.h. Please set to either MSPI_CLK_POLARITY_IDLE_HIGH or MSPI_CLK_POLARITY_IDLE_LOW"
+#endif
+
+
+	// clock phase
+#if MSPI_CFG_CLK_PHASE == MSPI_CLK_PHASE_SAMPLE_ON_LEADING
+	CLR_BIT(MSPI_SPCR, MSPI_CPHA);
+#elif MSPI_CFG_CLK_PHASE == MSPI_CLK_PHASE_SAMPLE_ON_TRAILING
+	SET_BIT(MSPI_SPCR, MSPI_CPHA);
+#else
+	#error "MSPI_CFG_CLK_POLARITY not specified correctly in HLCD_config.h. Please set to either MSPI_CLK_POLARITY_IDLE_HIGH or MSPI_CLK_POLARITY_IDLE_LOW"
+#endif
+
+
+	// clock phase
+#if MSPI_CFG_SPEED_MODE == MSPI_SPEED_MODE_NORMAL
+	CLR_BIT(MSPI_SPSR, MSPI_SPI2X);
+#elif MSPI_CFG_SPEED_MODE == MSPI_SPEED_MODE_DOUBLE
+	SET_BIT(MSPI_SPSR, MSPI_SPI2X);
+#else
+	#error "MSPI_CFG_CLK_POLARITY not specified correctly in HLCD_config.h. Please set to either MSPI_CLK_POLARITY_IDLE_HIGH or MSPI_CLK_POLARITY_IDLE_LOW"
+#endif
+
+	MSPI_SPCR &= ~(0b11);
+	MSPI_SPCR |= MSPI_CFG_CLK_RATE;
 }
 
-u8 MSPI_u8TransferData(u8 Data){
+u8 MSPI_u8TransferData(u8 Copy_u8Byte){
+	MSPI_SPDR = Copy_u8Byte;
 
+	while(GET_BIT(MSPI_SPSR, MSPI_SPIF) == 0);
+
+	return MSPI_SPDR;
 }
