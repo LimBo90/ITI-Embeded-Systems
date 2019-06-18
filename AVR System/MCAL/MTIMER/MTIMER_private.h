@@ -1,8 +1,11 @@
-#ifndef MTIMER0_PRIVATE_H_
-#define MTIMER0_PRIVATE_H_
+#ifndef MTIMER_PRIVATE_H_
+#define MTIMER_PRIVATE_H_
 
 
-/*************** GENERAL *************/
+/****************************************/
+/*************** GENERAL *****************/
+/****************************************/
+
 /*********** REGISTERS *********/
 #define MTIMER_TIMSK (*(volatile u8 *) (0x59))
 #define MTIMER_TIFR (*(volatile u8 *) (0x58))
@@ -32,7 +35,10 @@
 //SREG
 #define MTIMER_I 7
 
-/*************** TIMER0 *************/
+/****************************************/
+/*************** TIMER0 *****************/
+/****************************************/
+
 /*********** REGISTERS *********/
 #define MTIMER0_TCCR0 (*(volatile u8 *) (0x53))
 #define MTIMER0_TCNT0 (*(volatile u8 *) (0x52))
@@ -41,14 +47,16 @@
 /*********** PINS *********/
 //TCCR0
 #define MTIMER0_CS_MASK 0x07
-#define MTIMER0_WGM01 3
+#define MTIMER0_WGM_MASK 0b01001000
 #define MTIMER0_COM00 4
 #define MTIMER0_COM01 5
-#define MTIMER0_WGM00 6
 #define MTIMER0_FOC0 7
 
 
-/*************** TIMER1 *************/
+/****************************************/
+/*************** TIMER1 *****************/
+/****************************************/
+
 /*********** REGISTERS *********/
 #define MTIMER1_TCCR1A (*(volatile u8 *) (0x4F))
 #define MTIMER1_TCCR1B (*(volatile u8 *) (0x4E))
