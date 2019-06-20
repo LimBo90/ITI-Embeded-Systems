@@ -47,7 +47,8 @@
 /*********** PINS *********/
 //TCCR0
 #define MTIMER0_CS_MASK 0x07
-#define MTIMER0_WGM_MASK 0b01001000
+#define MTIMER0_WGM00	6
+#define MTIMER0_WGM01	3
 #define MTIMER0_COM00 4
 #define MTIMER0_COM01 5
 #define MTIMER0_FOC0 7
@@ -67,20 +68,22 @@
 
 /*********** PINS *********/
 //TTCR1A
-#define MTIMER1_WGM10	0
-#define MTIMER1_WGM11	1
-#define MTIMER1_FOC1B	2
-#define MTIMER1_FOC1A	3
-#define MTIMER1_COM1B0	4
-#define MTIMER1_COM1B1	5
-#define MTIMER1_COM1A0	6
-#define MTIMER1_COM1A1	7
+#define MTIMER1_WGMA_MASK	0b11
+#define MTIMER1_FOC1B		2
+#define MTIMER1_FOC1A		3
+#define MTIMER1_COM1B0		4
+#define MTIMER1_COM1B1		5
+#define MTIMER1_COM1A0		6
+#define MTIMER1_COM1A1		7
 
 //TTCR1B
-#define MTIMER1_CS_MASK 0x07
-#define MTIMER1_WGM12	3
-#define MTIMER1_WGM13	4
-#define MTIMER1_ICES1	6
-#define MTIMER1_ICNC1	7
+#define MTIMER1_CS_MASK 	0b111
+#define MTIMER1_WGMB_MASK	0b00011000
+#define MTIMER1_ICES1		6
+#define MTIMER1_ICNC1		7
 
+
+/********** values ************/
+#define MTIMER0_MAX_COUNT 256
+#define MTIMER1_MAX_COUNT 65536ULL
 #endif
