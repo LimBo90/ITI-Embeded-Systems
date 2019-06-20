@@ -3,7 +3,7 @@
 #include "LCIRCBUFF.h"
 
 /// Reset the circular buffer to empty, head == tail
-void LCIRCBUFF_reset(CBuffer* cbuf){
+void LCBUFFER_reset(CBuffer* cbuf){
     cbuf->head = 0;
     cbuf->tail = 0;
     cbuf->full = 0;
@@ -11,7 +11,7 @@ void LCIRCBUFF_reset(CBuffer* cbuf){
 
 /// Put data into buffer, rejects new data if the buffer is full
 /// Returns 1 on success, 0 if buffer is full
-u8 LCIRCBUFF_put(CBuffer* cbuf, u8 data){
+u8  LCBUFFER_put(CBuffer* cbuf, u8 data){
     u8 r = 0;
 
     if(!LCIRCBUFF_full(cbuf))
@@ -26,7 +26,7 @@ u8 LCIRCBUFF_put(CBuffer* cbuf, u8 data){
 
 
 
-u8 LCIRCBUFF_putStr(CBuffer* cbuf, u8 * data){
+u8 LCBUFFER_putStr(CBuffer* cbuf, u8 * data){
     u8 r = 0;
     do{
         if(!LCIRCBUFF_put(cbuf, *data)){
@@ -39,7 +39,7 @@ u8 LCIRCBUFF_putStr(CBuffer* cbuf, u8 * data){
 }
 /// Retrieve a value from the buffer
 /// Returns 1 on success, 0 if the buffer is empty
-u8 LCIRCBUFF_get(CBuffer* cbuf, u8 * data){
+u8 LCBUFFER_get(CBuffer* cbuf, u8 * data){
     int r = 0;
 
     if(!LCIRCBUFF_empty(cbuf))
@@ -55,11 +55,11 @@ u8 LCIRCBUFF_get(CBuffer* cbuf, u8 * data){
 }
 
 /// Returns true if the buffer is empty
-u8 LCIRCBUFF_empty(CBuffer* cbuf){
+u8 LCBUFFER_empty(CBuffer* cbuf){
     return (!cbuf->full && (cbuf->head == cbuf->tail));
 }
 
 /// Returns true if the buffer is full
-u8 LCIRCBUFF_full(CBuffer* cbuf){
+u8 LCBUFFER_full(CBuffer* cbuf){
     return cbuf->full;
 }
