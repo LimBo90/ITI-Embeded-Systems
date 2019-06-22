@@ -4,8 +4,7 @@
 #include "MTIMER_private.h"
 #include "MTIMER_interface.h"
 #include "MTIMER_config.h"
-#include "HLED_interface.h"
-#include "HLCD_interface.h"
+#include "MUART_interface.h"
 
 #if MTIMER0_CFG_PRESCALER == MTIMER_PRESCALER_OFF
 #define MTIMER0_PRESCALER 1
@@ -112,33 +111,42 @@ void MTIMER_voidSetDesiredTime(u8 Copy_u8Timer, u32 Copy_u32Time_ms){
 	case MTIMER_TIMER1:
 		g_timer1_nOverflows = (Copy_u32Time_ms * (u64)F_OSC) / (1000 * (u32)MTIMER1_PRESCALER * MTIMER1_MAX_COUNT);
 		rem = ((Copy_u32Time_ms * (u64)F_OSC)/(1000 * (u32)MTIMER1_PRESCALER)) % MTIMER1_MAX_COUNT;
-			if(rem > 0){
-				g_timer1_nOverflows++;
-				g_timer1_preload = MTIMER1_MAX_COUNT - rem;
-			}else{
-				g_timer1_preload = 0;
-			}
-			MTIMER1_TCNT1 = g_timer1_preload;
+		if(rem > 0){
+			g_timer1_nOverflows++;
+			g_timer1_preload = MTIMER1_MAX_COUNT - rem;
+		}else{
+			g_timer1_preload = 0;
+		}
+		MTIMER1_TCNT1 = g_timer1_preload;
 		break;
 	}
-
 }
 
+/**
+ * prints the number of overflows and preload
+ * used for debugging
+ */
 void displayNumbers(u8 timer){
 	switch(timer){
 	case MTIMER_TIMER0:
-		HLCD_writeNumber(g_timer0_nOverflows);
-		HLCD_shiftCursorRight(1);
-		HLCD_writeNumber(g_timer0_preload);
-		HLCD_shiftCursorRight(1);
-		HLCD_writeNumber(MTIMER0_OCR0);
+		MUART_u8SendStr("g_timer0_nOverflows = ");
+		MUART_u8SendNumber(g_timer0_nOverflows);
+		MUART_u8SendByte('\n');
+		MUART_u8SendStr("g_timer0_preload = ");
+		MUART_u8SendNumber(g_timer0_preload);
+		MUART_u8SendByte('\n');
+		MUART_u8SendStr("OCR0 = ");
+		MUART_u8SendNumber(MTIMER0_OCR0);
 		break;
 	case MTIMER_TIMER1:
-		HLCD_writeNumber(g_timer1_nOverflows);
-		HLCD_shiftCursorRight(1);
-		HLCD_writeNumber(g_timer1_preload);
-		HLCD_shiftCursorRight(1);
-		HLCD_writeNumber(MTIMER1_OCR1A);
+		MUART_u8SendStr("g_timer1_nOverflows = ");
+		MUART_u8SendNumber(g_timer1_nOverflows);
+		MUART_u8SendByte('\n');
+		MUART_u8SendStr("g_timer1_preload = ");
+		MUART_u8SendNumber(g_timer1_preload);
+		MUART_u8SendByte('\n');
+		MUART_u8SendStr("MTIMER1_OCR1A = ");
+		MUART_u8SendNumber(MTIMER1_OCR1A);
 		break;
 	}
 }
@@ -158,7 +166,6 @@ void MTIMER_voidSetCTC(u8 Copy_u8Timer, u16 Copy_u16OCR, u32 Copy_u32Time_ms){
 			g_timer0_preload = 0;
 		}
 		MTIMER0_OCR0 = Local_u8OCR;
-		MTIMER0_TCNT0 = g_timer0_preload;
 		break;
 	case MTIMER_TIMER1:
 		g_timer1_nOverflows = (Copy_u32Time_ms * (u64)F_OSC) / (1000 * (u32)MTIMER1_PRESCALER * Copy_u16OCR);
@@ -170,11 +177,42 @@ void MTIMER_voidSetCTC(u8 Copy_u8Timer, u16 Copy_u16OCR, u32 Copy_u32Time_ms){
 			g_timer1_preload = 0;
 		}
 		MTIMER1_OCR1A = Copy_u16OCR;
-		MTIMER1_TCNT1 = g_timer1_preload;
+//		g_timer1_nOverflows = 1;
+//		g_timer1_preload = 0;
+//		MTIMER1_OCR1A = 500;
 		break;
 	}
 }
 
+void MTIMER_voidSetCTC_us(u8 Copy_u8Timer, u16 Copy_u16OCR, u32 Copy_u32Time_us){
+
+	u8 Local_u8OCR = (u8)Copy_u16OCR;
+	u16 rem;
+	switch(Copy_u8Timer){
+	case MTIMER_TIMER0:
+		g_timer0_nOverflows = (Copy_u32Time_us * (u64)F_OSC) / (1000000 * (u64)MTIMER0_PRESCALER * Local_u8OCR);
+		rem = ((Copy_u32Time_us * (u64)F_OSC)/(1000000 * (u64)MTIMER0_PRESCALER)) % Local_u8OCR;
+		if(rem > 0){
+			g_timer0_nOverflows++;
+			g_timer0_preload = Local_u8OCR - rem;
+		}else{
+			g_timer0_preload = 0;
+		}
+		MTIMER0_OCR0 = Local_u8OCR;
+		break;
+	case MTIMER_TIMER1:
+		g_timer1_nOverflows = (Copy_u32Time_us * (u64)F_OSC) / (1000000 * (u64)MTIMER1_PRESCALER * Copy_u16OCR);
+		rem =  ((Copy_u32Time_us * (u64)F_OSC)/(1000000 * (u64)MTIMER1_PRESCALER)) % Copy_u16OCR;
+		if(rem > 0){
+			g_timer1_nOverflows++;
+			g_timer1_preload = Copy_u16OCR - rem;
+		}else{
+			g_timer1_preload = 0;
+		}
+		MTIMER1_OCR1A = Copy_u16OCR;
+		break;
+	}
+}
 
 void __vector_11(void){
 	static u32 nOverflows = 0;
@@ -242,10 +280,12 @@ void MTIMER_voidStartTimer(u8 Copy_u8Timer){
 	case MTIMER_TIMER0:
 	    MTIMER0_TCCR0 &= ~MTIMER0_CS_MASK;
 	    MTIMER0_TCCR0 |= MTIMER0_CFG_PRESCALER;
+	    MTIMER0_TCNT0 = g_timer0_preload;
 	    break;
 	case MTIMER_TIMER1:
 		MTIMER1_TCCR1B &= ~MTIMER1_CS_MASK;
 		MTIMER1_TCCR1B |= MTIMER1_CFG_PRESCALER;
+		MTIMER1_TCNT1 = g_timer1_preload;
 		break;
 	}
 }

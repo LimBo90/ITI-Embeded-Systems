@@ -58,7 +58,7 @@ void MTIMER_voidSetDesiredTime(u8 Copy_u8Timer, u32 Copy_u32Time_ms);
  * 								callback function is specified using MTIMER_voidSetCompareMatchCallback()
  */
 void MTIMER_voidSetCTC(u8 Copy_u8Timer, u16 OCR, u32 Copy_u32Time_ms);
-
+void MTIMER_voidSetCTC_us(u8 Copy_u8Timer, u16 Copy_u16OCR, u32 Copy_u32Time_us);
 /**
  * Sets callBack function that's called when the timer reaches the time speciied in setDesiredTime()
  */
