@@ -1,5 +1,8 @@
+
 #include "LSTD_TYPES.h"
 #include "LUTILS.h"
+#include "LSTRING_UTILS.h"
+#include "LCBUFFER.h"
 
 #include "MUART_private.h"
 #include "MUART_interface.h"
@@ -15,11 +18,25 @@
     #error "error UART mode is not set. set MUART_MODE in MUART_config.h"
 #endif
 
-//static u8 Global_u8RecieveBuffer[RECIEVE_BUFFER_SIZE] = {'\0'};
-volatile static u32 Global_u32ReciveBufferSize = 0;
-volatile static u8 buffer;
+
+volatile static u8 recieveBuffer;
+volatile static CBuffer sendBuffer;
+
+void (*onReciveCallBack)(u8);
 
 void __vector_13 (void) __attribute__ ((signal, INTR_ATTRBS));
+void __vector_14 (void) __attribute__ ((signal, INTR_ATTRBS));
+
+static void Local_voidEnableUDREmptyInterrupt();
+static void Local_voidDisableUDREmptyInterrupt();
+
+void Local_voidEnableUDREmptyInterrupt(){
+	SET_BIT(MUART_UCSRB, MUART_UDRIE);
+}
+
+void Local_voidDisableUDREmptyInterrupt(){
+	CLR_BIT(MUART_UCSRB, MUART_UDRIE);
+}
 
 void MUART_voidInit(void){
 	u8 Local_u8UCSRC = 0;
@@ -64,42 +81,66 @@ void MUART_voidInit(void){
 
    MUART_UCSRC = (1 << 7) | Local_u8UCSRC;
 
-//   HLCD_writeNumber(MUART_UCSRA);
-//   HLCD_shiftCursorRight(1);
-//   HLCD_writeNumber(MUART_UCSRB);
-//   HLCD_shiftCursorRight(1);
-//   HLCD_writeNumber((1 << 7) | Local_u8UCSRC);
+//enable global interrupts
+   SET_BIT(MUART_SREG, MUART_I);
 
-   //enable global interrupts
-//   SET_BIT(MUART_SREG, MUART_I);
-//
-////   enable interrupt on recieve
-//   SET_BIT(MUART_UCSRB, MUART_RXCIE);
+//enable interrupt on recieve
+   SET_BIT(MUART_UCSRB, MUART_RXCIE);
 
+  //initalize send circular buffer
+   LCBUFFER_voidReset(&sendBuffer);
 }
 
-void MUART_voidSendByte(u8 Copy_u8Data){
-    while(GET_BIT(MUART_UCSRA, MUART_UDRE) == 0);
-    MUART_UDR = Copy_u8Data;
-}
-
-u8 MUART_voidRecieveByte(u8 * Copy_u8Data){
-//	if(GET_BIT(MUART_UCSRA, MUART_RXC) == 1){
-//		*Copy_u8Data = MUART_UDR;
-//		return 1;
-//	}else{
-//		return 0;
-//	}
-	if(Global_u32ReciveBufferSize){
-		*Copy_u8Data = buffer;
-		Global_u32ReciveBufferSize = 0;
-		return 1;
-	}else{
-		return 0;
+u8 MUART_u8SendByte(u8 Copy_u8Data){
+	u8 sucess = LCBUFFER_u8Put(&sendBuffer, Copy_u8Data);
+	if(sucess){
+		Local_voidEnableUDREmptyInterrupt();
 	}
+	return sucess;
+}
+
+void MUART_voidSendBytePoling(u8 Copy_u8Data){
+	 while(GET_BIT(MUART_UCSRA, MUART_UDRE) == 0);
+	    MUART_UDR = Copy_u8Data;
+}
+
+u8 MUART_u8SendStr(u8 *  Copy_u8Data){
+	//puts string into buffer
+	u8 sucess = LCBUFFER_u8PutStr(&sendBuffer, Copy_u8Data);
+	//enable interupt on UDR register empty to begin sending data
+	Local_voidEnableUDREmptyInterrupt();
+	return sucess;
+}
+
+u8 MUART_u8SendNumber(u64 n){
+	u8 buffer[20];
+	numberToString(n, buffer);
+	return MUART_u8SendStr(buffer);
+}
+
+u8 MUART_u8RecieveByte(u8 * Copy_u8Data){
+	u8 r = 0;
+	if(GET_BIT(MUART_UCSRA, MUART_RXC) == 1){
+		*Copy_u8Data = MUART_UDR;
+		r = 1;
+	}
+	return r;
+}
+
+void MUART_voidSetOnRecieveCallback(void (*func) (u8)){
+	onReciveCallBack = func;
 }
 
 void __vector_13(void){
-	buffer = MUART_UDR;
-	Global_u32ReciveBufferSize = 1;
+	recieveBuffer = MUART_UDR;
+	onReciveCallBack(recieveBuffer);
+}
+
+void __vector_14(void){
+	u8 c;
+	LCBUFFER_u8Get(&sendBuffer, &c);
+	MUART_UDR = c;
+	if(LCBUFFER_u8Empty(&sendBuffer)){
+		Local_voidDisableUDREmptyInterrupt();
+	}
 }
