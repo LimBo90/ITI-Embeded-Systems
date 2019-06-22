@@ -38,6 +38,10 @@ u8 MUART_u8RecieveByte(u8 * Copy_u8Data);
  */
 void MUART_voidSetOnRecieveCallback(void (*func) (u8));
 
+/**
+ * prints the number of overflows and preload
+ * used for debugging
+ */
 void MUART_voidSendBytePoling(u8 Copy_u8Data);
 
 #endif
