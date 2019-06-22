@@ -23,6 +23,7 @@
 #define MTIMER_MODE_PHASE_CORRECT_PWM 	0b00000001
 #define MTIMER_MODE_CTC					0b00001000
 #define MTIMER_MODE_FAST_PWM 			0b00001001
+#define MTIMER_MODE_FAST_PWM_14 			0b00011010
 
 //initial state
 #define MTIMER_INITIAL_STATE_ENABLED	0
@@ -59,8 +60,10 @@ void MTIMER_voidSetDesiredTime(u8 Copy_u8Timer, u32 Copy_u32Time_ms);
  */
 void MTIMER_voidSetCTC(u8 Copy_u8Timer, u16 OCR, u32 Copy_u32Time_ms);
 void MTIMER_voidSetCTC_us(u8 Copy_u8Timer, u16 Copy_u16OCR, u32 Copy_u32Time_us);
+
+void MTIMER_voidSetPwmWithFreq(u32 Copy_u32Preiod_ms, u8 Copy_u8DutyCycle);
 /**
- * Sets callBack function that's called when the timer reaches the time speciied in setDesiredTime()
+ * Sets callBack function that's called when the timer reaches the time specified in setDesiredTime()
  */
 void MTIMER_voidSetOVCallback(u8 Copy_u8Timer, void (*func)(void));
 

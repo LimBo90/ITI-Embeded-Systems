@@ -85,11 +85,15 @@ void MTIMER_voidInit(u8 Copy_u8Timer){
 		    MTIMER1_TCCR1B &= ~(MTIMER1_WGMB_MASK);
 		    MTIMER1_TCCR1B |= (MTIMER1_CFG_MODE & MTIMER1_WGMB_MASK);
 
+		#if MTIMER1_CFG_MODE == MTIMER_MODE_FAST_PWM_14
+			CLR_BIT(MTIMER1_TCCR1A, MTIMER1_COM1A0);
+			SET_BIT(MTIMER1_TCCR1A, MTIMER1_COM1A1);
+		#endif
 		    //set prescaler
 		     MTIMER1_TCCR1B &= ~MTIMER1_CS_MASK;
-		 #if MTIMER1_CFG_INITIAL_STATE == MTIMER_INITIAL_STATE_ENABLED
+		#if MTIMER1_CFG_INITIAL_STATE == MTIMER_INITIAL_STATE_ENABLED
 		     MTIMER1_TCCR1B |= MTIMER1_CFG_PRESCALER;
-		 #endif
+		#endif
 		     break;
 	}
 }
@@ -212,6 +216,17 @@ void MTIMER_voidSetCTC_us(u8 Copy_u8Timer, u16 Copy_u16OCR, u32 Copy_u32Time_us)
 		MTIMER1_OCR1A = Copy_u16OCR;
 		break;
 	}
+}
+
+/**
+ * This is available only in timer 1.
+ * It enables generating a PWM with variable frequency on OC1A pin
+ * Input:	Copy_u32Preiod_ms the period of the PWM in ms signal this will calculate the value that will be put in ICR
+ * 			CopyCopy_u32Preiod_ms the duty cycle of the pwm range 0 ========> 100
+ */
+void MTIMER_voidSetPwmWithFreq(u32 Copy_u32Preiod_ms, u8 Copy_u8DutyCycle){
+	MTIMER1_ICR1 = (Copy_u32Preiod_ms * (u64)F_OSC) / (1000 * (u32)MTIMER1_CFG_PRESCALER);
+	MTIMER1_OCR1A = ((u32)Copy_u8DutyCycle*MTIMER1_ICR1)/100;
 }
 
 void __vector_11(void){
