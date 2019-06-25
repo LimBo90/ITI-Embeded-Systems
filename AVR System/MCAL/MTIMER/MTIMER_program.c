@@ -4,7 +4,8 @@
 #include "MTIMER_private.h"
 #include "MTIMER_interface.h"
 #include "MTIMER_config.h"
-#include "MUART_interface.h"
+#include "HLED_interface.h"
+#include "HLCD_interface.h"
 
 #if MTIMER0_CFG_PRESCALER == MTIMER_PRESCALER_OFF
 #define MTIMER0_PRESCALER 1
@@ -46,8 +47,11 @@ void __vector_7 (void) __attribute__ ((signal, INTR_ATTRS));
 
 void (*timer0_OVCallback) (void);
 void (* timer0_CompareMatchCallback) (void);
+void (*timer0_timeLapsedCallback) (void);
+
 void (*timer1_OVCallback) (void);
 void (* timer1_CompareMatchCallback) (void);
+void (*timer1_timeLapsedCallback) (void);
 
 void MTIMER_voidInit(u8 Copy_u8Timer){
 
@@ -98,7 +102,7 @@ void MTIMER_voidInit(u8 Copy_u8Timer){
 	}
 }
 
-void MTIMER_voidSetDesiredTime(u8 Copy_u8Timer, u32 Copy_u32Time_ms){
+void MTIMER_voidSetDesiredTime(u8 Copy_u8Timer, u32 Copy_u32Time_ms,  void (*callback) (void)){
 	u16  rem;
 	switch(Copy_u8Timer){
 	case MTIMER_TIMER0:
@@ -111,52 +115,43 @@ void MTIMER_voidSetDesiredTime(u8 Copy_u8Timer, u32 Copy_u32Time_ms){
 			g_timer0_preload = 0;
 		}
 		MTIMER0_TCNT0 = g_timer0_preload;
+		timer0_timeLapsedCallback = callback;
 		break;
 	case MTIMER_TIMER1:
 		g_timer1_nOverflows = (Copy_u32Time_ms * (u64)F_OSC) / (1000 * (u32)MTIMER1_PRESCALER * MTIMER1_MAX_COUNT);
 		rem = ((Copy_u32Time_ms * (u64)F_OSC)/(1000 * (u32)MTIMER1_PRESCALER)) % MTIMER1_MAX_COUNT;
-		if(rem > 0){
-			g_timer1_nOverflows++;
-			g_timer1_preload = MTIMER1_MAX_COUNT - rem;
-		}else{
-			g_timer1_preload = 0;
-		}
-		MTIMER1_TCNT1 = g_timer1_preload;
+			if(rem > 0){
+				g_timer1_nOverflows++;
+				g_timer1_preload = MTIMER1_MAX_COUNT - rem;
+			}else{
+				g_timer1_preload = 0;
+			}
+			MTIMER1_TCNT1 = g_timer1_preload;
+			timer1_timeLapsedCallback = callback;
 		break;
 	}
 }
 
-/**
- * prints the number of overflows and preload
- * used for debugging
- */
 void displayNumbers(u8 timer){
 	switch(timer){
 	case MTIMER_TIMER0:
-		MUART_u8SendStr("g_timer0_nOverflows = ");
-		MUART_u8SendNumber(g_timer0_nOverflows);
-		MUART_u8SendByte('\n');
-		MUART_u8SendStr("g_timer0_preload = ");
-		MUART_u8SendNumber(g_timer0_preload);
-		MUART_u8SendByte('\n');
-		MUART_u8SendStr("OCR0 = ");
-		MUART_u8SendNumber(MTIMER0_OCR0);
+		HLCD_writeNumber(g_timer0_nOverflows);
+		HLCD_shiftCursorRight(1);
+		HLCD_writeNumber(g_timer0_preload);
+		HLCD_shiftCursorRight(1);
+		HLCD_writeNumber(MTIMER0_OCR0);
 		break;
 	case MTIMER_TIMER1:
-		MUART_u8SendStr("g_timer1_nOverflows = ");
-		MUART_u8SendNumber(g_timer1_nOverflows);
-		MUART_u8SendByte('\n');
-		MUART_u8SendStr("g_timer1_preload = ");
-		MUART_u8SendNumber(g_timer1_preload);
-		MUART_u8SendByte('\n');
-		MUART_u8SendStr("MTIMER1_OCR1A = ");
-		MUART_u8SendNumber(MTIMER1_OCR1A);
+		HLCD_writeNumber(g_timer1_nOverflows);
+		HLCD_shiftCursorRight(1);
+		HLCD_writeNumber(g_timer1_preload);
+		HLCD_shiftCursorRight(1);
+		HLCD_writeNumber(MTIMER1_OCR1A);
 		break;
 	}
 }
 
-void MTIMER_voidSetCTC(u8 Copy_u8Timer, u16 Copy_u16OCR, u32 Copy_u32Time_ms){
-
+void MTIMER_voidSetDesiredTimeCTC(u8 Copy_u8Timer, u16 Copy_u16OCR, u32 Copy_u32Time_ms, void (*callback) (void)){
 	u8 Local_u8OCR = (u8)Copy_u16OCR;
 	u16 rem;
 	switch(Copy_u8Timer){
@@ -170,6 +165,7 @@ void MTIMER_voidSetCTC(u8 Copy_u8Timer, u16 Copy_u16OCR, u32 Copy_u32Time_ms){
 			g_timer0_preload = 0;
 		}
 		MTIMER0_OCR0 = Local_u8OCR;
+		timer0_timeLapsedCallback = callback;
 		break;
 	case MTIMER_TIMER1:
 		g_timer1_nOverflows = (Copy_u32Time_ms * (u64)F_OSC) / (1000 * (u32)MTIMER1_PRESCALER * Copy_u16OCR);
@@ -181,9 +177,7 @@ void MTIMER_voidSetCTC(u8 Copy_u8Timer, u16 Copy_u16OCR, u32 Copy_u32Time_ms){
 			g_timer1_preload = 0;
 		}
 		MTIMER1_OCR1A = Copy_u16OCR;
-//		g_timer1_nOverflows = 1;
-//		g_timer1_preload = 0;
-//		MTIMER1_OCR1A = 500;
+		timer1_timeLapsedCallback = callback;
 		break;
 	}
 }
@@ -225,15 +219,17 @@ void MTIMER_voidSetCTC_us(u8 Copy_u8Timer, u16 Copy_u16OCR, u32 Copy_u32Time_us)
  * 			CopyCopy_u32Preiod_ms the duty cycle of the pwm range 0 ========> 100
  */
 void MTIMER_voidSetPwmWithFreq(u32 Copy_u32Preiod_ms, u8 Copy_u8DutyCycle){
-	MTIMER1_ICR1 = (Copy_u32Preiod_ms * (u64)F_OSC) / (1000 * (u32)MTIMER1_CFG_PRESCALER);
-	MTIMER1_OCR1A = ((u32)Copy_u8DutyCycle*MTIMER1_ICR1)/100;
+	MTIMER1_ICR1 = (Copy_u32Preiod_ms * (u64)F_OSC) / (1000 * (u32)MTIMER1_PRESCALER);
+	MTIMER1_OCR1A = ((u32)Copy_u8DutyCycle * MTIMER1_ICR1) /100;
 }
+
 
 void __vector_11(void){
 	static u32 nOverflows = 0;
 	nOverflows++;
+	timer0_OVCallback();
 	if(nOverflows == g_timer0_nOverflows){
-		timer0_OVCallback();
+		timer0_timeLapsedCallback();
 		nOverflows = 0;
 		MTIMER0_TCNT0 = g_timer0_preload;
 	}
@@ -242,8 +238,9 @@ void __vector_11(void){
 void __vector_10(void){
 	static u32 nOverflows = 0;
 	nOverflows++;
+	timer0_CompareMatchCallback();
 	if(nOverflows == g_timer0_nOverflows){
-		timer0_CompareMatchCallback();
+		timer0_timeLapsedCallback();
 		MTIMER0_TCNT0 = g_timer0_preload;
 		nOverflows = 0;
 	}
@@ -252,8 +249,9 @@ void __vector_10(void){
 void __vector_9(void){
 	static u32 nOverflows = 0;
 	nOverflows++;
+	timer1_OVCallback();
 	if(nOverflows == g_timer1_nOverflows){
-		timer1_OVCallback();
+		timer1_timeLapsedCallback();
 		nOverflows = 0;
 		MTIMER1_TCNT1 = g_timer1_preload;
 	}
@@ -262,8 +260,9 @@ void __vector_9(void){
 void __vector_7(void){
 	static u32 nOverflows = 0;
 	nOverflows++;
+	timer1_CompareMatchCallback();
 	if(nOverflows == g_timer1_nOverflows){
-		timer1_CompareMatchCallback();
+		timer1_timeLapsedCallback();
 		nOverflows = 0;
 		MTIMER1_TCNT1 = g_timer1_preload;
 	}
