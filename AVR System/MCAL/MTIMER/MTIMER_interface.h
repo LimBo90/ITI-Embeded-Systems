@@ -37,6 +37,10 @@
 #define MTIMER_TIMER0 0
 #define MTIMER_TIMER1 1
 
+/********** values ************/
+#define MTIMER0_MAX_COUNT 256
+#define MTIMER1_MAX_COUNT 65536ULL
+
 /**
  * Initalizes timer
  */
@@ -90,5 +94,21 @@ void MTIMER_voidEnableCompareMatchInterrupt(u8 Copy_u8Timer);
 void MTIMER_voidDisableCompareMatchInterrupt(u8 Copy_u8Timer);
 void MTIMER_voidEnableGlobalInterrupts(void);
 void MTIMER_voidDisableGlobalInterrupts(void);
-void displayNumbers(u8 timer);
+
+/**
+ * Returns the count (TCNT register)
+ */
+u16 MTIMER_u16GetCount(u8 Copy_u8Timer);
+
+/**
+ * Converts the number of ticks provided to time in ms
+ */
+u32 MTIMER_u32GetTime_ms(u8 Copy_u8Timer, u32 nTicks);
+
+
+/**
+ * Converts the number of ticks provided to time in us
+ */
+u32 MTIMER_u32GetTime_us(u8 Copy_u8Timer, u32 nTicks);
+
 #endif

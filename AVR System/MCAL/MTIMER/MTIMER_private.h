@@ -83,7 +83,5 @@
 #define MTIMER1_ICNC1		7
 
 
-/********** values ************/
-#define MTIMER0_MAX_COUNT 256
-#define MTIMER1_MAX_COUNT 65536ULL
+
 #endif
