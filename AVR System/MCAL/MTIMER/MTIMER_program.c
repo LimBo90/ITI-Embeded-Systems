@@ -208,11 +208,14 @@ void MTIMER_voidSetCTC_us(u8 Copy_u8Timer, u16 Copy_u16OCR, u32 Copy_u32Time_us)
  * This is available only in timer 1.
  * It enables generating a PWM with variable frequency on OC1A pin
  * Input:	Copy_u32Preiod_ms the period of the PWM in ms signal this will calculate the value that will be put in ICR
- * 			CopyCopy_u32Preiod_ms the duty cycle of the pwm range 0 ========> 100
+ * 			Copy_u8DutyCycle the duty cycle of the pwm range 0 ========> 1000
+ * 			if you send 500 that means 50%
  */
-void MTIMER_voidSetPwmWithFreq(u32 Copy_u32Preiod_ms, u8 Copy_u8DutyCycle){
+void MTIMER_voidSetPwmWithFreq(u32 Copy_u32Preiod_ms, u16 Copy_u8DutyCycle){
 	MTIMER1_ICR1 = (Copy_u32Preiod_ms * (u64)F_OSC) / (1000 * (u32)MTIMER1_PRESCALER);
-	MTIMER1_OCR1A = ((u32)Copy_u8DutyCycle * MTIMER1_ICR1) /100;
+	MTIMER1_OCR1A = ((u32)Copy_u8DutyCycle * MTIMER1_ICR1) / 1000;
+
+
 }
 
 

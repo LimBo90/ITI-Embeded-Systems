@@ -73,7 +73,7 @@ void MTIMER_voidSetOVCallback(u8 Copy_u8Timer, void (*func)(void));
 void MTIMER_voidSetCompareMatchCallback(u8 Copy_u8Timer, void (*func)(void));
 
 
-void MTIMER_voidSetPwmWithFreq(u32 Copy_u32Preiod_ms, u8 Copy_u8DutyCycle);
+void MTIMER_voidSetPwmWithFreq(u32 Copy_u32Preiod_ms, u16 Copy_u8DutyCycle);
 
 /**
  * Starts timer
