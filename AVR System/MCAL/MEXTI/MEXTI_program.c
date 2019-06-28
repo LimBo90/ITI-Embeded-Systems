@@ -1,4 +1,3 @@
-
 #include "LUTILS.h"
 #include "LSTD_TYPES.h"
 
@@ -16,6 +15,7 @@ void __vector_2(void) __attribute__ ((signal, INTR_ATTRS));
 void __vector_3(void) __attribute__ ((signal, INTR_ATTRS));
 
 void MEXTI_enableINT(u8 INT_no, u8 mode){
+	SET_BIT(MEXTI_GICR, INT_no);
 	switch(INT_no){
 		case MEXTI_INT0: 
 			switch(mode){
@@ -71,7 +71,6 @@ void MEXTI_enableINT(u8 INT_no, u8 mode){
 	INT0_ISR_ptr = NULL;
 	INT1_ISR_ptr = NULL;
 	INT2_ISR_ptr = NULL;
-	SET_BIT(MEXTI_GICR, INT_no);
 	return;
 }
 
