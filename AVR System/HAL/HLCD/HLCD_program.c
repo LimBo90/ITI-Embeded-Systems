@@ -2,7 +2,7 @@
 
 #include "LSTD_TYPES.h"
 #include "LUTILS.h"
-#include "util/delay.h"
+#include "LDelay.h"
 #include "MDIO_interface.h"
 #include "HLCD_private.h"
 #include "HLCD_interface.h"
@@ -14,7 +14,7 @@ static void numberToString(u64 i, u8 buff[]);
 
 
 void HLCD_init(void){
-	_delay_ms(30);
+	LDelay_ms(30);
 	//Sets control pins and data port pins to be output
 	MDIO_setPinDirection(HLCD_CONTROL_PORT, HLCD_RS, OUTPUT);
 	MDIO_setPinDirection(HLCD_CONTROL_PORT, HLCD_RW, OUTPUT);
@@ -23,7 +23,7 @@ void HLCD_init(void){
 		MDIO_setPortDirection(HLCD_DATA_PORT, 0xFF, OUTPUT);
 #elif HLCD_MODE == HLCD_MODE_4_BIT
 		MDIO_setPortDirection(HLCD_DATA_PORT, 0xF0, OUTPUT);
-	_delay_ms(1);
+	LDelay_ms(1);
 #else
 	#error "HLCD_MODE not specified correctly in HLCD_config.h. Please set to either HLCD_MODE_8_BIT or HLCD_MODE_4_BIT"
 #endif
@@ -58,11 +58,11 @@ void HLCD_init(void){
 #error "HLCD_CURSOR_MODE not specified correctly in HCD_config.h. Please setto either HLCD_CURSOR_BLINK_ON or HLCD_CURSOR_BLINK_OFF"
 #endif
 	HLCD_writeCMD(DISPLAYCONTROL_DISPLAY_ON | HLCD_CURSOR_MODE | HLCD_CURSOR_BLINK);
-	_delay_ms(1);
+	LDelay_ms(1);
 
 	//Clear Display
 	HLCD_writeCMD(CLEAR_DISPLAY);
-	_delay_ms(2);
+	LDelay_ms(2);
 
 	//sets the move direction of cursor and display
 	//sets the cursor to move to the right when a new character is displayed and the new character is added to the left (left to right)
@@ -218,7 +218,7 @@ void HLCD_displayCustomCharacter(u8 indx){
 void latchEnablePin(u8 delay){
 	//latches the EN pin
 	MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, HIGH);
-	_delay_ms(delay);
+	LDelay_ms(delay);
 	MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, LOW);
 }
 
