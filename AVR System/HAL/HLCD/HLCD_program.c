@@ -10,8 +10,6 @@
 
 
 static void latchEnablePin(u8 delay);
-static void numberToString(u64 i, u8 buff[]);
-
 
 void HLCD_init(void){
 	LDelay_ms(30);
@@ -138,10 +136,22 @@ void HLCD_writeStr(u8 str[]){
 	}
 }
 
-void HLCD_writeNumber(u64 n){
-	u8 buffer[20];
-	numberToString(n, buffer);
-	HLCD_writeStr(buffer);
+void HLCD_writeNumber(u32 n){
+	u32 shifter = n;
+	u32 i = 1;
+	u8 res = 1;
+	while(1){
+		shifter /= 10;
+		if(shifter == 0)
+			break;
+		i *= 10;
+	}
+	while(i > 0){
+		u8 volatile digit;
+		digit = (n/i) % 10;
+//		HLCD_writeData('0' + digit);
+		i  /= 10;
+	}
 }
 
 void HLCD_clearDisplay(){
@@ -220,23 +230,4 @@ void latchEnablePin(u8 delay){
 	MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, HIGH);
 	LDelay_ms(delay);
 	MDIO_setPinValue(HLCD_CONTROL_PORT, HLCD_EN, LOW);
-}
-
-
-void numberToString(u64 i, u8 b[]){
-    u8* p = b;
-    if(i<0){
-        *p++ = '-';
-        i *= -1;
-    }
-    u64 shifter = i;
-    do{ //Move to where representation ends
-        ++p;
-        shifter = shifter/10;
-    }while(shifter);
-    *p = '\0';
-    do{ //Move back, inserting digits as u go
-        *--p = '0' + (i%10);
-        i = i/10;
-    }while(i);
 }

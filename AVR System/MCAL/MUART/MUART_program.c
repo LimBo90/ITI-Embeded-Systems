@@ -18,7 +18,7 @@
 
 
 volatile static u8 recieveBuffer;
-volatile static CBuffer sendBuffer;
+ static CBuffer sendBuffer;
 
 void (*onReciveCallBack)(u8);
 
@@ -106,14 +106,16 @@ u8 MUART_u8SendStr(u8 *  Copy_u8Data){
 	//puts string into buffer
 	u8 sucess = LCBUFFER_u8PutStr(&sendBuffer, Copy_u8Data);
 	//enable interupt on UDR register empty to begin sending data
-	Local_voidEnableUDREmptyInterrupt();
+	if(sucess){
+		Local_voidEnableUDREmptyInterrupt();
+	}
 	return sucess;
 }
 
-u8 MUART_u8SendNumber(u64 n){
-	 u64 shifter = n;
-	u64 i = 1;
-
+u8 MUART_u8SendNumber(u32 n){
+	u32 shifter = n;
+	u32 i = 1;
+	u8 res = 1;
 	while(1){
 		shifter /= 10;
 		if(shifter == 0)
@@ -122,9 +124,13 @@ u8 MUART_u8SendNumber(u64 n){
 	}
 	while(i > 0){
 		u8 digit = (n/i) % 10;
-		MUART_u8SendByte(digit + '0');
+		if(!MUART_u8SendByte(digit + '0')){
+			res = 0;
+			break;
+		}
 		i  /= 10;
 	}
+	return res;
 }
 
 u8 MUART_u8RecieveByte(u8 * Copy_u8Data){
@@ -147,9 +153,8 @@ void __vector_13(void){
 
 void __vector_14(void){
 	u8 c;
-	LCBUFFER_u8Get(&sendBuffer, &c);
-	MUART_UDR = c;
-	if(LCBUFFER_u8Empty(&sendBuffer)){
+	if(LCBUFFER_u8Get(&sendBuffer, &c))
+		MUART_UDR = c;
+	else
 		Local_voidDisableUDREmptyInterrupt();
-	}
 }

@@ -25,7 +25,7 @@ u8 MUART_u8SendStr(u8 * str);
  * Return 1 if it has succeeded in sending the string
  * and 0 if the buffer is full.
  */
-u8 MUART_u8SendNumber(u64 n);
+u8 MUART_u8SendNumber(u32 n);
 
 /**
  * Return 1 if there's a byte received through the UART module if nothing is received returns 0
