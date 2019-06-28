@@ -1,7 +1,5 @@
-
 #include "LSTD_TYPES.h"
 #include "LUTILS.h"
-#include "LSTRING_UTILS.h"
 #include "LCBUFFER.h"
 
 #include "MUART_private.h"
@@ -113,9 +111,20 @@ u8 MUART_u8SendStr(u8 *  Copy_u8Data){
 }
 
 u8 MUART_u8SendNumber(u64 n){
-	u8 buffer[20];
-	numberToString(n, buffer);
-	return MUART_u8SendStr(buffer);
+	 u64 shifter = n;
+	u64 i = 1;
+
+	while(1){
+		shifter /= 10;
+		if(shifter == 0)
+			break;
+		i *= 10;
+	}
+	while(i > 0){
+		u8 digit = (n/i) % 10;
+		MUART_u8SendByte(digit + '0');
+		i  /= 10;
+	}
 }
 
 u8 MUART_u8RecieveByte(u8 * Copy_u8Data){
