@@ -5,6 +5,8 @@
 #include "MEXTI_interface.h"
 #include "MEXTI_private.h"
 
+#define NULL ((void *) 0)
+
 void (*INT0_ISR_ptr) (void);
 void (*INT1_ISR_ptr) (void);
 void (*INT2_ISR_ptr) (void);
@@ -14,7 +16,6 @@ void __vector_2(void) __attribute__ ((signal, INTR_ATTRS));
 void __vector_3(void) __attribute__ ((signal, INTR_ATTRS));
 
 void MEXTI_enableINT(u8 INT_no, u8 mode){
-	SET_BIT(MEXTI_GICR, INT_no);
 	switch(INT_no){
 		case MEXTI_INT0: 
 			switch(mode){
@@ -65,7 +66,12 @@ void MEXTI_enableINT(u8 INT_no, u8 mode){
 					SET_BIT(MEXTI_MCUCSR, MEXTI_ISC2);
 					return;
 				}
+			break;
 	}
+	INT0_ISR_ptr = NULL;
+	INT1_ISR_ptr = NULL;
+	INT2_ISR_ptr = NULL;
+	SET_BIT(MEXTI_GICR, INT_no);
 	return;
 }
 
@@ -78,7 +84,7 @@ u8 MEXTI_checkINT(u8 INT_no){
 	return GET_BIT(MEXTI_GIFR, INT_no);
 }
 
-void MEXTI_registerISR(u8 INT_no, void (*isr_func)(void)){
+void MEXTI_setCallback(u8 INT_no, void (*isr_func)(void)){
 	switch(INT_no){
 	case MEXTI_INT0:	INT0_ISR_ptr = isr_func;	return;
 	case MEXTI_INT1:	INT1_ISR_ptr = isr_func;	return;
@@ -86,24 +92,27 @@ void MEXTI_registerISR(u8 INT_no, void (*isr_func)(void)){
 	}
 }
 
-void MEXTI_enableInterrupts(){
+void MEXTI_enableGlobalInterrupts(){
 	SET_BIT(MEXTI_SREG, MEXTI_I);
 }
 
-void MEXTI_disableInterrupts(){
+void MEXTI_disableGlobalInterrupts(){
 	CLR_BIT(MEXTI_SREG, MEXTI_I);
 }
 
 void __vector_1(void){
-	INT0_ISR_ptr();
+	if(INT0_ISR_ptr != NULL)
+		INT0_ISR_ptr();
 }
 
 void __vector_2(void){
-	INT1_ISR_ptr();
+	if(INT1_ISR_ptr != NULL)
+		INT1_ISR_ptr();
 }
 
 void __vector_3(void){
-	INT2_ISR_ptr();
+	if(INT2_ISR_ptr != NULL)
+		INT2_ISR_ptr();
 }
 
 

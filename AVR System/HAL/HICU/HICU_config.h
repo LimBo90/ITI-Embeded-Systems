@@ -20,7 +20,7 @@
 #define HICU_EXTI1  1
 #define HICU_EXTI2  2
 
-#define HICU_CFG_EXTI HICU_EXTI2
+#define HICU_CFG_EXTI HICU_EXTI0
 
 /**
  * Chooses which timer is used

@@ -10,8 +10,6 @@
 #include "LSTD_TYPES.h"
 #include "LUTILS.h"
 
-#include "MUART_interface.h"
-
 #include "MDIO_interface.h"
 #include "MEXTI_interface.h"
 #include "MTIMER_interface.h"
@@ -45,8 +43,8 @@ void HICU_voidInit(){
 #endif
 
 	MEXTI_enableGlobalInterrupts();
-	MEXTI_enableINT(HICU_EXTI, MEXTI_MODE_FALLING_EDGE);
 	MEXTI_setCallback(HICU_EXTI, HICU_voidMeasurePWM);
+	MEXTI_enableINT(HICU_EXTI, MEXTI_MODE_FALLING_EDGE);
 
 	//Initalize globals
 	Ton = 0;
