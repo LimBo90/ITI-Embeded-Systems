@@ -126,7 +126,6 @@ void MTIMER_voidSetDesiredTime(u8 Copy_u8Timer, u32 Copy_u32Time_ms,  void (*cal
 		}
 		MTIMER0_TCNT0 = g_timer0_preload;
 		timer0_timeLapsedCallback = callback;
-		MUART_u8SendNumber(g_timer0_preload);
 		break;
 	case MTIMER_TIMER1:
 		g_timer1_nOverflows = (Copy_u32Time_ms * (u64)F_OSC) / (1000 * (u32)MTIMER1_PRESCALER * MTIMER1_MAX_COUNT);

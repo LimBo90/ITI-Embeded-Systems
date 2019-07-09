@@ -16,9 +16,9 @@
 
 typedef enum {Rising, Falling} Edge;
 
-volatile u32 Ton;
-volatile u32 Toff;
-volatile u32 n_overflows;
+volatile static u32 Ton;
+volatile static u32 Toff;
+volatile static u32 n_overflows;
 
 void HICU_voidInit(){
 	//initalizing timer 1
