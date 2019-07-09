@@ -1,11 +1,9 @@
 #ifndef HKPD_INTERFACE_H_
 #define HKPD_INTERFACE_H_
 
-#include "MDIO_interface.h"
-#include "HKPD_private.h"
 
 
-#define HKPD_PORT   PORTB
+#define HKPD_PORT   PORTA
 
 /**
  * The Keypad pins will be connected to the port as follows
@@ -21,8 +19,15 @@
  */
 
 #define HKPD_NULL_CHARACTER '\0'
-
+/**
+ * Initalizes the keypad
+ */
 void HKPD_init(void);
-u8 HKPD_getKey(void);
+
+/**
+ *	Returns 1 if a key is pressed and puts the pressed key in key placeholder provided
+ *	Returns 0 if there's no key currently pressed
+ */
+u8 HKPD_getKey(u8 * key);
 
 #endif

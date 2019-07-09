@@ -19,20 +19,25 @@ void HKPD_init(void){
     return;
 }
 
-u8 HKPD_getKey(){
+u8 HKPD_getKey(u8 * key){
+	u8 res = 0;
     MDIO_setPort(HKPD_PORT, 0x0F);
-    for(u8 i = 3; i >= 0; i--){
+    for(u8 i = 0; i <= 3; i++){
         MDIO_setPinValue(HKPD_PORT, i, LOW);
         for(u8 j = 4; j <= 7; j++){
             if(MDIO_getPinValue(HKPD_PORT, j) == LOW){
                 while(MDIO_getPinValue(HKPD_PORT, j) == LOW) ;
                 MDIO_setPinValue(HKPD_PORT, i, HIGH);
-                return KEYPAD[j-4][3-i];
+                *key = KEYPAD[j-4][3-i];
+                res = 1;
+                break;
             }
         }
+        if(res == 1)
+        	break;
         MDIO_setPinValue(HKPD_PORT, i, HIGH);
     }
-    return HKPD_NULL_CHARACTER;
+    return res;
 }
 
 
