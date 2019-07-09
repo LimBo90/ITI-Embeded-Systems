@@ -149,7 +149,7 @@ void HLCD_writeNumber(u32 n){
 	while(i > 0){
 		u8 volatile digit;
 		digit = (n/i) % 10;
-//		HLCD_writeData('0' + digit);
+		HLCD_writeData('0' + digit);
 		i  /= 10;
 	}
 }
