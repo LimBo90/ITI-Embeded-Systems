@@ -309,6 +309,16 @@ void MDIO_voidSetPinValue(u8 Copy_u8Port, u8 Copy_u8Pin, u8 Copy_u8PinVal){
 	}
 }
 
+void MDIO_voidTogglePin(u8 Copy_u8Port, u8 Copy_u8Pin){
+	switch(Copy_u8Port)
+	{
+		case MDIO_PORTA:	LUTILS_TOGGLE_BIT(MDIO_GPIOA->ODR, Copy_u8Pin);	break;
+		case MDIO_PORTB:	LUTILS_TOGGLE_BIT(MDIO_GPIOB->ODR, Copy_u8Pin);	break;
+		case MDIO_PORTC:	LUTILS_TOGGLE_BIT(MDIO_GPIOC->ODR, Copy_u8Pin);	break;
+		default: /* Report Error */ 										break;
+	}
+}
+
 void MDIO_voidGetPinValue(u8 Copy_u8Port, u8 Copy_u8Pin, u8 *Copy_u8PinVal){
 	switch(Copy_u8Port)
 	{

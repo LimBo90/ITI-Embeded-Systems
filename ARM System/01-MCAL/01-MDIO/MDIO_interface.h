@@ -31,7 +31,7 @@
 #define DIO_U8_HIGH 1
 #define DIO_U8_LOW 0
 
-/*********Digital pin directions/*********/
+/*********Digital pin directions *********/
 //General purpose output
 #define MDIO_MODE_OUTPUT_PUSHPULL_10      0b0001
 #define MDIO_MODE_OUTPUT_PUSHPULL_2       0b0010
@@ -55,6 +55,7 @@
 void MDIO_voidInit(void);
 void MDIO_voidSetPinValue(u8 Copy_u8Port, u8 Copy_u8Pin, u8 Copy_u8PinVal);
 void MDIO_voidGetPinValue(u8 Copy_u8Port, u8 Copy_u8Pin, u8* Copy_u8PinVal);
+void MDIO_voidTogglePin(u8 Copy_u8Port, u8 Copy_u8Pin);
 void MDIO_voidSetPinMode(u8 Copy_u8Port, u8 Copy_u8Pin, u8 Copy_PinMode);
 void MDIO_voidSetPortMode(u8 Copy_u8Port, u16 Copy_u8Mask, u8 Copy_PinMode);
 void MDIO_voidSetPortValue(u8 Copy_u8Port, u16 Copy_u8Mask, u16 Copy_u8Value);
