@@ -49,7 +49,7 @@ u8 MFLASH_voidGetStatus(void){
  */
 u8 MFLASH_voidWaitForLastoperation(u32 timeout){
 	u8 status = MFLASH_voidGetStatus();
-	while(status != MFLASH_COMPLETE && timeout){
+	while(status == MFLASH_BUSY && timeout){
 		status = MFLASH_voidGetStatus();
 		timeout--;
 	}
@@ -66,7 +66,7 @@ u8 MFLASH_voidWaitForLastoperation(u32 timeout){
  */
 u8 MFLASH_u8ErasePage(u32 Copy_u8PageAddress){
     //wait until current flash operation finishes
-	u8 status = MFLASH_voidWaitForLastoperation(EraseTimeout);
+	u8 status = MFLASH_voidWaitForLastoperation(ERASE_TIMEOUT);
 
 	if(status == MFLASH_COMPLETE){
 
@@ -76,7 +76,7 @@ u8 MFLASH_u8ErasePage(u32 Copy_u8PageAddress){
 	    LUTILS_SET_BIT(MFLASH->CR, STRT);
 
 	    //wait until erase operation finishes
-		status = MFLASH_voidWaitForLastoperation(EraseTimeout);
+		status = MFLASH_voidWaitForLastoperation(ERASE_TIMEOUT);
 
 	    //disable the PER bit
 	    LUTILS_CLR_BIT(MFLASH->CR, PER);
@@ -95,7 +95,7 @@ u8 MFLASH_u8ErasePage(u32 Copy_u8PageAddress){
  */
 u8 MFLASH_u8WriteWord(u32 Copy_u32Address, u32 Copy_u32Data){
 	//wait until current flash operation finishes
-	u8 status = MFLASH_voidWaitForLastoperation(EraseTimeout);
+	u8 status = MFLASH_voidWaitForLastoperation(ERASE_TIMEOUT);
 
 	if(status == MFLASH_COMPLETE){
 		 // if the previous operation is finished correctly, begin programming FLASH
@@ -104,14 +104,14 @@ u8 MFLASH_u8WriteWord(u32 Copy_u32Address, u32 Copy_u32Data){
 		//write LSB
 		*(u16 *) Copy_u32Address = (u16)Copy_u32Data;
 		//wait for the last operation to be completed
-		status = MFLASH_voidWaitForLastoperation(ProgramTimeout);
+		status = MFLASH_voidWaitForLastoperation(PROGRAM_TIMEOUT);
 
 		if(status == MFLASH_COMPLETE){
 			//if the previous operation is completed successfully write the next 2 bytes
 			*(u16 *) (Copy_u32Address + 2) = (u16)(Copy_u32Data >> 16);
 
 			//wait for the last operation to be completed
-			status = MFLASH_voidWaitForLastoperation(ProgramTimeout);
+			status = MFLASH_voidWaitForLastoperation(PROGRAM_TIMEOUT);
 
 			//clear PG flag
 			LUTILS_CLR_BIT(MFLASH->CR, PG);
@@ -132,7 +132,7 @@ u8 MFLASH_u8WriteWord(u32 Copy_u32Address, u32 Copy_u32Data){
  */
 u8 MFLASH_u8WriteHalfWord(u32 Copy_u32Address, u16 Copy_u16Data){
 	//wait until current flash operation finishes
-	u8 status = MFLASH_voidWaitForLastoperation(EraseTimeout);
+	u8 status = MFLASH_voidWaitForLastoperation(ERASE_TIMEOUT);
 
 	if(status == MFLASH_COMPLETE){
 		 // if the previous operation is finished correctly, begin programming FLASH
@@ -141,7 +141,7 @@ u8 MFLASH_u8WriteHalfWord(u32 Copy_u32Address, u16 Copy_u16Data){
 		//write LSB
 		*(u16 *) Copy_u32Address = (u16)Copy_u16Data;
 		//wait for the last operation to be completed
-		status = MFLASH_voidWaitForLastoperation(ProgramTimeout);
+		status = MFLASH_voidWaitForLastoperation(PROGRAM_TIMEOUT);
 
 		LUTILS_CLR_BIT(MFLASH->CR, PG);
 	}
