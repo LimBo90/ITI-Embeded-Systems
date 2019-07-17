@@ -39,6 +39,9 @@ typedef struct
 #define FLASH_KEY1               ((u32)0x45670123)
 #define FLASH_KEY2               ((u32)0xCDEF89AB)
 
+/* Delay definition */
+#define ERASE_TIMEOUT          ((u32)0x000B0000)
+#define PROGRAM_TIMEOUT        ((u32)0x00002000)
 
 typedef enum
 { 

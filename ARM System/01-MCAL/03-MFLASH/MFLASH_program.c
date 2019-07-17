@@ -43,6 +43,13 @@ u8 MFLASH_voidGetStatus(void){
 }
 
 /**
+ * Clears flash status flags PGERR, WRPRTERR and EOP flags
+ */
+void MFLASH_voidClearPendingFlags(void){
+	MFLASH->SR = 0b110100;
+}
+
+/**
  * Waits until the currently executing operation finishes
  * Returns the flash status, can either be
  * MFLASH_COMPLETE or MFLASH_TIMEOUT
@@ -82,7 +89,7 @@ u8 MFLASH_u8ErasePage(u32 Copy_u8PageAddress){
 	    LUTILS_CLR_BIT(MFLASH->CR, PER);
 
 	}
-    return MFLASH_COMPLETE;
+    return status;
 }
 
 /**

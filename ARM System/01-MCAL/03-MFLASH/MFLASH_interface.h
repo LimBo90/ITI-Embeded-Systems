@@ -25,6 +25,11 @@ void MFLASH_voidLock(void);
 u8 MFLASH_voidGetStatus(void);
 
 /**
+ * Clears flash status flags PGERR, WRPRTERR and EOP flags
+ */
+void MFLASH_voidClearPendingFlags(void);
+
+/**
  * Erases a page from the flash
  * input:	Copy_u8PageAddress Address of the page in FLASH to be erased
  * Returns the flash status, can either be
