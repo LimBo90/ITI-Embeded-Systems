@@ -36,10 +36,12 @@
 //Timer Selection
 #define MTIMER_TIMER0 0
 #define MTIMER_TIMER1 1
+#define MTIMER_TIMER2 2
 
 /********** values ************/
 #define MTIMER0_MAX_COUNT 256
 #define MTIMER1_MAX_COUNT 65536ULL
+#define MTIMER2_MAX_COUNT 256
 
 /**
  * Initalizes timer
@@ -47,7 +49,7 @@
 void MTIMER_voidInit(u8 Copy_u8Timer);
 
 /**
- * Sets the time after which the the timer will call call back function provided
+ * Sets the time after which the the timer will call callback function provided
  * Input :- Copy_u8Timer	MTIMER_TIMER0 or MTIMER_TIMER1
  * 			Copy_u32Time_ms	The time in ms after which the callback function is called
  * 			callBack		The callback function called every Copy_u32Time_ms ms
@@ -64,15 +66,24 @@ void MTIMER_voidSetDesiredTime(u8 Copy_u8Timer, u32 Copy_u32Time_ms, void (*call
  * 			callback			The function called every Copy_u32Time_ms ms
  */
 void MTIMER_voidSetDesiredTimeCTC(u8 Copy_u8Timer, u16 OCR, u32 Copy_u32Time_ms,  void (*callBack) (void));
-void MTIMER_voidSetCTC_us(u8 Copy_u8Timer, u16 Copy_u16OCR, u32 Copy_u32Time_us);
+
 /**
  * Sets callBack function that's called when the timer reaches the time speciied in setDesiredTime()
  */
 void MTIMER_voidSetOVCallback(u8 Copy_u8Timer, void (*func)(void));
 
+/**
+ * Sets callBack function that's called when the timer reaches the time speciied in setDesiredTimeCTC()
+ */
 void MTIMER_voidSetCompareMatchCallback(u8 Copy_u8Timer, void (*func)(void));
 
-
+/**
+ * This is available only in timer 1 in PWM Mode 14
+ * It enables generating a PWM with variable frequency on OC1A pin
+ * Input:	Copy_u32Preiod_ms the period of the PWM in ms signal this will calculate the value that will be put in ICR
+ * 			Copy_u8DutyCycle the duty cycle of the pwm range 0 ========> 1000
+ * 			if you send 500 that means 50%
+ */
 void MTIMER_voidSetPwmWithFreq(u32 Copy_u32Preiod_ms, u16 Copy_u8DutyCycle);
 
 /**
@@ -110,5 +121,18 @@ u32 MTIMER_u32GetTime_ms(u8 Copy_u8Timer, u32 nTicks);
  * Converts the number of ticks provided to time in us
  */
 u32 MTIMER_u32GetTime_us(u8 Copy_u8Timer, u32 nTicks);
+
+/**
+ * Converts the time (in milliseconds) provided to number of ticks
+ * You have to specify the timer used as its configured prescaler will be used in calculation
+ */
+u32 MTIMER_u32GetTicks_ms(u8 Copy_u8Timer, u32 Copy_u32Time_ms);
+
+/**
+ * Converts the time (in microseconds) provided to number of ticks
+ * You have to specify the timer used as its configured prescaler will be used in calculation
+ */
+u32 MTIMER_u32GetTicks_us(u8 Copy_u8Timer, u32 Copy_u32Time_us);
+
 
 #endif
