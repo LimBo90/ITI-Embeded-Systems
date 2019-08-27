@@ -22,20 +22,27 @@ volatile static u8 recieveBuffer;
 
 void (*onReciveCallBack)(u8);
 
+/* Rx complete Interrupt */
 void __vector_13 (void) __attribute__ ((signal, INTR_ATTRBS));
+/* UDR register empty interrupt */
 void __vector_14 (void) __attribute__ ((signal, INTR_ATTRBS));
 
 static void Local_voidEnableUDREmptyInterrupt();
 static void Local_voidDisableUDREmptyInterrupt();
 
+/* Enables UDR empty interrupt */
 void Local_voidEnableUDREmptyInterrupt(){
 	SET_BIT(MUART_UCSRB, MUART_UDRIE);
 }
 
+/* Disasble UDR empty interrupt */
 void Local_voidDisableUDREmptyInterrupt(){
 	CLR_BIT(MUART_UCSRB, MUART_UDRIE);
 }
 
+/**
+ * Initalizes the UART module
+ */
 void MUART_voidInit(void){
 	u8 Local_u8UCSRC = 0;
     SET_BIT(MUART_UCSRB, MUART_RXEN);    //enable RXEN
@@ -89,29 +96,47 @@ void MUART_voidInit(void){
    LCBUFFER_voidReset(&sendBuffer);
 }
 
+/**
+ * Sends a byte through the UART module without polling (character is recorded in buffer and sent when UART is ready to transmit)
+ * Return 1 if it has succeeded in sending the string
+ * and 0 if the buffer is full.
+ */
 u8 MUART_u8SendByte(u8 Copy_u8Data){
-	u8 sucess = LCBUFFER_u8Put(&sendBuffer, Copy_u8Data);
-	if(sucess){
-		Local_voidEnableUDREmptyInterrupt();
+	u8 sucess = LCBUFFER_u8Put(&sendBuffer, Copy_u8Data);	/* Put data in buffer */
+	if(sucess){	/* if data is put in buffer sucessfully */
+		Local_voidEnableUDREmptyInterrupt();	/* enable UDR empty interrupt to begin transmitting when UART is ready */
 	}
 	return sucess;
 }
 
+
+/**
+ * Sends a byte through UART and doesnt return until that character is sent
+ */
 void MUART_voidSendBytePoling(u8 Copy_u8Data){
-	 while(GET_BIT(MUART_UCSRA, MUART_UDRE) == 0);
-	    MUART_UDR = Copy_u8Data;
+	 while(GET_BIT(MUART_UCSRA, MUART_UDRE) == 0);	/* wait until UDR register is empty */
+	    MUART_UDR = Copy_u8Data;	/* Tranmit data */
 }
 
+/**
+ * Sends a string through the UART module
+ * Return 1 if it has succeeded in sending the string
+ * and 0 if the buffer is full.
+ */
 u8 MUART_u8SendStr(u8 *  Copy_u8Data){
-	//puts string into buffer
+	/* puts string into buffer */
 	u8 sucess = LCBUFFER_u8PutStr(&sendBuffer, Copy_u8Data);
-	//enable interupt on UDR register empty to begin sending data
-	if(sucess){
-		Local_voidEnableUDREmptyInterrupt();
+	if(sucess){/* if string  is put in buffer sucessfully */
+		Local_voidEnableUDREmptyInterrupt();	/* enable UDR empty interrupt to begin transmitting when UART is ready */
 	}
 	return sucess;
 }
 
+/**
+ * Sends a number through the UART module
+ * Return 1 if it has succeeded in sending the string
+ * and 0 if the buffer is full.
+ */
 u8 MUART_u8SendNumber(u32 n){
 	u32 shifter = n;
 	u32 i = 1;
@@ -133,28 +158,37 @@ u8 MUART_u8SendNumber(u32 n){
 	return res;
 }
 
+/**
+ * Return 1 if there's a byte received through the UART module if nothing is received returns 0
+ * Puts the received byte in Copy_u8Data
+ */
 u8 MUART_u8RecieveByte(u8 * Copy_u8Data){
 	u8 r = 0;
-	if(GET_BIT(MUART_UCSRA, MUART_RXC) == 1){
-		*Copy_u8Data = MUART_UDR;
+	if(GET_BIT(MUART_UCSRA, MUART_RXC) == 1){ /* if RXC flag is raised (character is recieved) */
+		*Copy_u8Data = MUART_UDR;	
 		r = 1;
 	}
 	return r;
 }
 
+/**
+ * Sets callback that's called when a receive interrupt happens
+ */
 void MUART_voidSetOnRecieveCallback(void (*func) (u8)){
 	onReciveCallBack = func;
 }
 
+/* Rx complete ISR (recieve complete) */
 void __vector_13(void){
-	recieveBuffer = MUART_UDR;
-	onReciveCallBack(recieveBuffer);
+	recieveBuffer = MUART_UDR;	/* record the recieved character */
+	onReciveCallBack(recieveBuffer);	/* call the callback function */
 }
 
+/* UDR empty ISR (can transmut safely) */
 void __vector_14(void){
 	u8 c;
-	if(LCBUFFER_u8Get(&sendBuffer, &c))
-		MUART_UDR = c;
-	else
-		Local_voidDisableUDREmptyInterrupt();
+	if(LCBUFFER_u8Get(&sendBuffer, &c))	/* get next character from cicular buffer */
+		MUART_UDR = c;	/* send that charater */
+	else	/* if no more characters in buffer */
+		Local_voidDisableUDREmptyInterrupt();	/*disable interrupt which will stop transmitting any more charachters */
 }

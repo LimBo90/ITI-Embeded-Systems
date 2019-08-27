@@ -7,11 +7,16 @@
 void MUART_voidInit(void);
 
 /**
- * Sends a byte through the UART module
+ * Sends a byte through the UART module without polling (character is recorded in buffer and sent when UART is ready to transmit)
  * Return 1 if it has succeeded in sending the string
  * and 0 if the buffer is full.
  */
 u8 MUART_u8SendByte(u8 Copy_u8Data);
+
+/**
+ * Sends a byte through UART and doesnt return until that character is sent
+ */
+void MUART_voidSendBytePoling(u8 Copy_u8Data);
 
 /**
  * Sends a string through the UART module
