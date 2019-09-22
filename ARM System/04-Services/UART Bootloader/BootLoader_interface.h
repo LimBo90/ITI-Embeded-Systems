@@ -17,7 +17,7 @@
 #define RECORD_FLASH_ERR_WRP			MFLASH_ERROR_WRP 	/* record failed to be written to flash due to write protection*/
 #define RECORD_FLASH_ERR_TIMEOUT		MFLASH_TIMEOUT 		/* record failed to be written to flash	due to timeout*/
 #define RECORD_FLASH_ERR_INVALID_ADD	30					/* record's address in not in the range of application flash */
-
+#define RECORD_FLASH_ERR_ERASE			40					/* couldn't erase application region in flash */
 
 /**
  * Initalizes bootloader

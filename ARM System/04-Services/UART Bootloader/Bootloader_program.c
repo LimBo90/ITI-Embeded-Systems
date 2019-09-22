@@ -75,11 +75,15 @@ void BootLoader_voidFSM(){
 			/* if received correctly erase application region in flash */
 				MUART_voidSendString("LOG: New hex file incoming \r");
 				MUART_voidSendString("LOG: Erasing FLASH...\r");
-				BootLoader_u8EraseApplicationFlash();
-
-				currentBLState = WritingApp; /* move to writing state */
-				appReady = 0;	/*Signal that the application isn't ready*/
-
+				status = BootLoader_u8EraseApplicationFlash();
+				if(status == MFLASH_COMPLETE){
+					/* application region erased successfully */
+					currentBLState = WritingApp; /* move to writing state */
+					appReady = 0;	/*Signal that the application isn't ready*/
+				}else{
+					/* Error during erasing application region */
+					BootLoader_voidSendError(RECORD_FLASH_ERR_ERASE);
+				}
 			}else if(status == MUART_TIMEOUT && appReady){
 				/* if timeout occurred and an application is already ready in flash move to finished state */
 				currentBLState = Finished;
@@ -96,9 +100,10 @@ void BootLoader_voidFSM(){
 			if(status == RECORD_PARSE_OK){
 				/* if record is parsed correctly. start decoding record */
 				status = BootLoader_u8DecodeRecord();
-				/* Send status of received record */
 
 				if(status == RECORD_EOF){
+					/* send ok */
+					MUART_voidSendString("ok\r");
 					/* if finished writing hex file	signal that the application is ready */
 					appReady = 1;
 					/* move to finished state */
@@ -114,8 +119,7 @@ void BootLoader_voidFSM(){
 				if(status == RECORD_FLASH_ERR_PG || status == RECORD_FLASH_ERR_WRP)
 					MFLASH_voidClearPendingFlags();
 
-				/* Erase what has been written to application flash */
-				BootLoader_u8EraseApplicationFlash();
+				/* Move to waiting state*/
 				currentBLState = Waiting;
 			}
 
@@ -132,8 +136,6 @@ void BootLoader_voidFSM(){
 					MFLASH_voidClearPendingFlags();
 					currentBLState = Waiting;
 				}
-			}else if(currentBLState == Finished){
-				MUART_voidSendString("ok\r");
 			}
 			break;
 	}
@@ -305,12 +307,13 @@ u8 BootLoader_u8AppExists(){
 void BootLoader_voidSendError(u8 errorCode){
 	switch(errorCode){
 		case RECORD_PARSE_ERR_CC:				MUART_voidSendString("ERR: Checksum error\r");																	break;
-		case RECORD_PARSE_ERR_MISSING_COLON:	MUART_voidSendString("ERR: Invalid record. No ':' at beginning of record\r");									break;
-		case RECORD_FLASH_ERR_PG:				MUART_voidSendString("ERR: Can't write record to flash. Tried to write into a region not previously erased\r");	break;
-		case RECORD_FLASH_ERR_WRP:				MUART_voidSendString("ERR: Can't write record to flash. Tried to write into a write protected region\r");		break;
-		case RECORD_FLASH_ERR_TIMEOUT:			MUART_voidSendString("ERR: Can't write record to flash. Flash took too long to program(timeout error).\r");		break;
-		case RECORD_FLASH_ERR_INVALID_ADD:		MUART_voidSendString("ERR: Can't write record to flash. Invalid address for record.\r");							break;
+		case RECORD_PARSE_ERR_MISSING_COLON:	MUART_voidSendString("ERR: Invalid record. Missing ':' at beginning of record\r");									break;
+		case RECORD_FLASH_ERR_PG:				MUART_voidSendString("ERR: Couldn't write record to flash. Tried to write into a region not previously erased\r");	break;
+		case RECORD_FLASH_ERR_WRP:				MUART_voidSendString("ERR: Couldn't write record to flash. Tried to write into a write protected region\r");		break;
+		case RECORD_FLASH_ERR_TIMEOUT:			MUART_voidSendString("ERR: Couldn't complete flash. Flash took too long to program(timeout error).\r");		break;
+		case RECORD_FLASH_ERR_INVALID_ADD:		MUART_voidSendString("ERR: Couldn't write record to flash. Invalid address for record.\r");							break;
 		case RECORD_UNKNOWN_TYPE_ERR: 			MUART_voidSendString("ERR: Record has an unknown type field\r");												break;
+		case RECORD_FLASH_ERR_ERASE:			MUART_voidSendString("ERR: Couldn't erase application region in flash. (timeout error)\r");						break;
 		default:								MUART_voidSendString("ERR: Undefined Status\r"); 																break;
 	}
 }
